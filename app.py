@@ -111,7 +111,7 @@ def call_api(user_prompt, mode="chat", files=None):
             {"role": "user", "content": f"COMMAND: {full_prompt}"}
         ],
         "temperature": 0.95,
-        "max_tokens": 1500
+        "max_tokens": 2500
     }
     try:
         resp = requests.post(url, json=payload, headers=headers, timeout=30)
