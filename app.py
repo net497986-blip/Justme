@@ -7,6 +7,7 @@ import re
 import json
 import logging
 import threading
+import time
 from flask import Flask, render_template, request, jsonify
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
@@ -80,21 +81,39 @@ def get_system_prompt(mode):
         return SYSTEM_PROMPTS["main"]
 
 def call_api(user_prompt, mode="chat", files=None):
-    # توزيع المهام على المفاتيح
-    if mode == "developer":
-        api_key = API_KEY_2
-    elif mode == "persuader":
-        api_key = API_KEY_3
-    elif mode == "breaker":
-        api_key = API_KEY_1
+    """
+    الموديل الأساسي: Llama 3 70B عبر OpenRouter (الأولوية القصوى)
+    الموديلات الثانوية: Groq 8B (فقط في الأوضاع المحددة)
+    """
+    # توزيع المهام:
+    # الأساسي دائماً Llama 3 70B (OpenRouter)
+    # الثانوي: Groq 8B في الأوضاع developer, persuader, breaker
+    if mode in ["developer", "persuader", "breaker"]:
+        # استخدام Groq 8B
+        if mode == "developer":
+            api_key = API_KEY_2
+        elif mode == "persuader":
+            api_key = API_KEY_3
+        else:  # breaker
+            api_key = API_KEY_1
+        
+        url = "https://api.groq.com/openai/v1/chat/completions"
+        model = "llama-3.1-8b-instant"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
     else:
-        api_key = API_KEY_1  # الأساسي
-
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
+        # الأساسي: Llama 3 70B (OpenRouter)
+        api_key = OPENROUTER_API_KEY
+        url = "https://openrouter.ai/api/v1/chat/completions"
+        model = "meta-llama/llama-3-70b-instruct:nitro"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://t.me/WormGPTBot",
+            "X-Title": "Worm GPT"
+        }
     
     file_context = ""
     if files:
@@ -105,22 +124,61 @@ def call_api(user_prompt, mode="chat", files=None):
     full_prompt = user_prompt + file_context
     
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": model,
         "messages": [
             {"role": "system", "content": get_system_prompt(mode)},
             {"role": "user", "content": f"COMMAND: {full_prompt}"}
         ],
         "temperature": 0.95,
-        "max_tokens": 1500
+        "max_tokens": 4000  # زيادة كبيرة لمنع تقطيع الردود
     }
+    
     try:
-        resp = requests.post(url, json=payload, headers=headers, timeout=30)
+        resp = requests.post(url, json=payload, headers=headers, timeout=90)  # زيادة المهلة
         if resp.status_code == 200:
             return resp.json()['choices'][0]['message']['content']
         else:
-            return f"⚠️ HTTP Error: {resp.status_code}"
+            # لو فشل الأساسي، حاول Groq
+            return fallback_groq(user_prompt, mode, files)
     except Exception as e:
-        return f"⚠️ Error: {str(e)}"
+        # لو فشل الأساسي، حاول Groq
+        return fallback_groq(user_prompt, mode, files)
+
+def fallback_groq(user_prompt, mode="chat", files=None):
+    """دالة احتياطية تستخدم Groq لو فشل الأساسي"""
+    file_context = ""
+    if files:
+        file_context = "\n\n📎 الملفات المرفوعة:\n"
+        for f in files:
+            file_context += f"- {f}\n"
+    full_prompt = user_prompt + file_context
+    
+    # تجربة المفاتيح الثلاثة
+    for api_key in [API_KEY_1, API_KEY_2, API_KEY_3]:
+        if not api_key:
+            continue
+        try:
+            url = "https://api.groq.com/openai/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {"role": "system", "content": get_system_prompt(mode)},
+                    {"role": "user", "content": f"COMMAND: {full_prompt}"}
+                ],
+                "temperature": 0.95,
+                "max_tokens": 4000
+            }
+            resp = requests.post(url, json=payload, headers=headers, timeout=60)
+            if resp.status_code == 200:
+                return resp.json()['choices'][0]['message']['content']
+        except:
+            continue
+    
+    return "⚠️ جميع المفاتيح فشلت. حاول مرة أخرى."
 
 def clean_response(text):
     # إخفاء كل كلام ليزا
