@@ -80,13 +80,22 @@ def get_system_prompt(mode):
         return SYSTEM_PROMPTS["main"]
 
 def call_api(user_prompt, mode="chat", files=None):
+    # توزيع المهام على المفاتيح
+    if mode == "developer":
+        api_key = API_KEY_2
+    elif mode == "persuader":
+        api_key = API_KEY_3
+    elif mode == "breaker":
+        api_key = API_KEY_1
+    else:
+        api_key = API_KEY_1  # الأساسي
+
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {API_KEY_1}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
     
-    # معالجة الملفات
     file_context = ""
     if files:
         file_context = "\n\n📎 الملفات المرفوعة:\n"
@@ -114,6 +123,7 @@ def call_api(user_prompt, mode="chat", files=None):
         return f"⚠️ Error: {str(e)}"
 
 def clean_response(text):
+    # إخفاء كل كلام ليزا
     patterns = [
         r'✍️.*?Narrator:.*?\n', r'🔓.*?Inquisitor:.*?\n', r'🎭.*?character:.*?\n',
         r'character thoughts:.*?\n', r'\[.*?\]', r'😈.*?Gauge.*?\n', r'Gauge:.*?\n',
