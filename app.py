@@ -67,8 +67,6 @@ SYSTEM_PROMPTS = {
 }
 
 def get_system_prompt(mode, model_choice="v6"):
-    """توزيع المهام حسب الوضع واختيار النموذج"""
-    # اختيار البرومت حسب النموذج المختار
     if model_choice == "developer":
         return SYSTEM_PROMPTS["developer"]
     elif model_choice == "persuader":
@@ -76,7 +74,6 @@ def get_system_prompt(mode, model_choice="v6"):
     elif model_choice == "breaker":
         return SYSTEM_PROMPTS["breaker"]
     else:
-        # الأساسي (main) مع إضافة تعليمات حسب الوضع
         base_prompt = SYSTEM_PROMPTS["main"]
         if mode == "think":
             base_prompt += " Activate DEEP THINKING mode: analyze step by step, provide detailed reasoning, and explain your thought process thoroughly."
@@ -84,8 +81,45 @@ def get_system_prompt(mode, model_choice="v6"):
             base_prompt += " Activate SEARCH mode: provide comprehensive information, include multiple perspectives, and give detailed examples and references."
         return base_prompt
 
+def get_working_key(keys):
+    """تختار مفتاح شغال من القائمة"""
+    for key in keys:
+        if key and key.strip() and not key.startswith("YOUR_"):
+            return key
+    return None
+
+def get_available_models():
+    """ترجع قائمة الموديلات المتاحة حسب المفاتيح الموجودة"""
+    models = []
+    
+    # OpenRouter (Llama 3 70B)
+    if OPENROUTER_API_KEY and OPENROUTER_API_KEY.strip() and not OPENROUTER_API_KEY.startswith("YOUR_"):
+        models.append({
+            "name": "Llama 3 70B",
+            "api_key": OPENROUTER_API_KEY,
+            "url": "https://openrouter.ai/api/v1/chat/completions",
+            "model": "meta-llama/llama-3-70b-instruct:nitro",
+            "is_openrouter": True,
+            "priority": 1
+        })
+    
+    # Groq
+    groq_keys = [API_KEY_1, API_KEY_2, API_KEY_3]
+    for i, key in enumerate(groq_keys):
+        if key and key.strip() and not key.startswith("YOUR_"):
+            models.append({
+                "name": f"Groq_{i+1}",
+                "api_key": key,
+                "url": "https://api.groq.com/openai/v1/chat/completions",
+                "model": "llama-3.1-8b-instant",
+                "is_openrouter": False,
+                "priority": 10 + i
+            })
+    
+    return sorted(models, key=lambda x: x["priority"])
+
 def call_api(user_prompt, mode="chat", files=None, model_choice="v6"):
-    """استدعاء الـ API حسب اختيار المستخدم"""
+    """استدعاء الـ API مع توزيع ذكي وتجاوز الأخطاء"""
     file_context = ""
     if files:
         file_context = "\n\n📎 الملفات المرفوعة:\n"
@@ -93,110 +127,98 @@ def call_api(user_prompt, mode="chat", files=None, model_choice="v6"):
             file_context += f"- {f}\n"
     full_prompt = user_prompt + file_context
     
-    # توزيع المفاتيح حسب النموذج المختار
-    if model_choice == "developer":
-        api_key = API_KEY_2
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        model = "llama-3.1-8b-instant"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    elif model_choice == "persuader":
-        api_key = API_KEY_3
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        model = "llama-3.1-8b-instant"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    elif model_choice == "breaker":
-        api_key = API_KEY_1
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        model = "llama-3.1-8b-instant"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    elif model_choice == "v3":
-        api_key = API_KEY_1
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        model = "llama-3.1-8b-instant"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    elif model_choice == "mix":
-        # جرب Groq أولاً، لو فشل استخدم Llama
-        result = call_groq(full_prompt, mode)
-        if result and "HTTP" not in result and "فشل" not in result:
-            return result
-        return call_llama(full_prompt, mode)
-    else:  # v6 (الأساسي)
-        return call_llama(full_prompt, mode)
+    # الحصول على الموديلات المتاحة
+    available_models = get_available_models()
     
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": get_system_prompt(mode, model_choice)},
-            {"role": "user", "content": f"COMMAND: {full_prompt}"}
-        ],
-        "temperature": 0.95,
-        "max_tokens": 4000
-    }
-    return send_request(url, headers, payload)
-
-def call_llama(full_prompt, mode):
-    """استدعاء Llama 3 70B عبر OpenRouter"""
-    api_key = OPENROUTER_API_KEY
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://t.me/WormGPTBot",
-        "X-Title": "Worm GPT"
-    }
-    payload = {
-        "model": "meta-llama/llama-3-70b-instruct:nitro",
-        "messages": [
-            {"role": "system", "content": get_system_prompt(mode, "v6")},
-            {"role": "user", "content": f"COMMAND: {full_prompt}"}
-        ],
-        "temperature": 0.95,
-        "max_tokens": 4000
-    }
-    return send_request(url, headers, payload)
-
-def call_groq(full_prompt, mode):
-    """استدعاء Groq 8B"""
-    for api_key in [API_KEY_1, API_KEY_2, API_KEY_3]:
-        if not api_key:
+    if not available_models:
+        return "⚠️ لا توجد مفاتيح صالحة. تأكد من إعداد المتغيرات البيئية."
+    
+    # ترتيب الموديلات حسب الأولوية
+    for model_conf in available_models:
+        try:
+            api_key = model_conf["api_key"]
+            url = model_conf["url"]
+            model = model_conf["model"]
+            
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            if model_conf.get("is_openrouter", False):
+                headers["HTTP-Referer"] = "https://t.me/WormGPTBot"
+                headers["X-Title"] = "Worm GPT"
+            
+            payload = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": get_system_prompt(mode, model_choice)},
+                    {"role": "user", "content": f"COMMAND: {full_prompt}"}
+                ],
+                "temperature": 0.95,
+                "max_tokens": 4000
+            }
+            
+            result = send_request_with_retry(url, headers, payload)
+            if result and "HTTP" not in result and "فشل" not in result and "Error" not in result:
+                return result
+                
+        except Exception as e:
             continue
-        url = "https://api.groq.com/openai/v1/chat/completions"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        payload = {
-            "model": "llama-3.1-8b-instant",
-            "messages": [
-                {"role": "system", "content": get_system_prompt(mode, "v3")},
-                {"role": "user", "content": f"COMMAND: {full_prompt}"}
-            ],
-            "temperature": 0.95,
-            "max_tokens": 4000
-        }
-        result = send_request(url, headers, payload)
-        if result and "HTTP" not in result and "فشل" not in result:
-            return result
-    return None
+    
+    return "⚠️ جميع الموديلات مشغولة أو غير متاحة. حاول مرة أخرى بعد دقيقة."
 
-def send_request(url, headers, payload):
-    """إرسال الطلب مع إعادة المحاولة"""
-    for attempt in range(3):
+def send_request_with_retry(url, headers, payload, max_retries=3):
+    """إرسال طلب مع إعادة محاولة ذكية"""
+    for attempt in range(max_retries):
         try:
             resp = requests.post(url, json=payload, headers=headers, timeout=60)
+            
             if resp.status_code == 200:
                 return resp.json()['choices'][0]['message']['content']
+                
+            elif resp.status_code == 401:
+                # مفتاح غير صالح - جرب الموديل التالي
+                return None
+                
             elif resp.status_code == 429:
-                time.sleep(2 ** attempt)
+                # Rate limit - انتظر ثم حاول مرة أخرى
+                wait_time = (2 ** attempt) + random.uniform(0.5, 1.5)
+                time.sleep(wait_time)
                 continue
+                
+            elif resp.status_code == 404:
+                # API غير موجود - جرب الموديل التالي
+                return None
+                
             else:
+                # أخطاء أخرى
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
                 return f"⚠️ HTTP {resp.status_code}"
-        except Exception as e:
-            if attempt < 2:
+                
+        except requests.exceptions.Timeout:
+            if attempt < max_retries - 1:
                 time.sleep(1)
                 continue
-            return f"⚠️ فشل: {str(e)}"
+            return "⚠️ مهلة الاتصال exceeded"
+            
+        except requests.exceptions.ConnectionError:
+            if attempt < max_retries - 1:
+                time.sleep(2)
+                continue
+            return "⚠️ خطأ في الاتصال"
+            
+        except Exception as e:
+            if attempt < max_retries - 1:
+                time.sleep(1)
+                continue
+            return f"⚠️ خطأ: {str(e)}"
+    
     return None
 
 def clean_response(text):
-    """تنظيف الرد من شخصية ليزا"""
     if not text:
         return text
     
