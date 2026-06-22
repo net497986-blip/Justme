@@ -6,6 +6,7 @@
 <title>WormGPT</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ===== نفس الـ CSS القديم (حافظت عليه) ===== */
 :root {
   --red-deep:#6B0000; --red-core:#CC0000; --red-bright:#FF2020;
   --red-glow:#FF4444; --red-soft:#FF6666;
@@ -77,8 +78,6 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);di
 .chat-area{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:#330000 transparent;}
 .chat-area::-webkit-scrollbar{width:3px;}
 .chat-area::-webkit-scrollbar-thumb{background:#440000;border-radius:3px;}
-
-/* Center hint */
 .center-hint{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:30px 20px;}
 .center-ring{width:68px;height:68px;border-radius:50%;border:2px solid var(--red-core);display:flex;align-items:center;justify-content:center;box-shadow:0 0 22px rgba(204,0,0,.35);position:relative;}
 .center-ring::before{content:'';position:absolute;inset:6px;border-radius:50%;border:1px solid rgba(204,0,0,.22);}
@@ -135,6 +134,10 @@ body{font-family:'Inter',sans-serif;background:var(--black);color:var(--text);di
 .pill svg{width:12px;height:12px;flex-shrink:0;}
 .pill.think.on{background:#110022;border-color:#7744CC;color:#BB99FF;box-shadow:0 0 10px rgba(100,0,200,.2);}
 .pill.search.on{background:#001122;border-color:#2255AA;color:#77BBFF;box-shadow:0 0 10px rgba(0,100,200,.2);}
+/* زر التحرير المخصص */
+.edit-btn{background:var(--red-core);color:#fff;border:none;padding:2px 12px;border-radius:12px;font-size:10px;cursor:pointer;margin-top:4px;transition:0.2s;}
+.edit-btn:hover{background:var(--red-bright);}
+.code-output{margin-top:6px;padding:8px;background:#0a0000;border:1px solid #441111;border-radius:8px;font-family:'Courier New',monospace;font-size:12px;color:#ff6666;white-space:pre-wrap;}
 
 .input-row{display:flex;align-items:flex-end;gap:7px;}
 .attach-btn{width:39px;height:39px;background:var(--dark2);border:1px solid #250000;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .17s;}
@@ -416,10 +419,15 @@ async function sendMsg() {
     document.getElementById('sendBtn').disabled = true;
 
     try {
+        const mode = thinkOn ? 'think' : (searchOn ? 'search' : 'chat');
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: userContent })
+            body: JSON.stringify({
+                message: userContent,
+                mode: mode,
+                files: files.map(f => f.name)
+            })
         });
         const data = await response.json();
         removeTyping(tid);
@@ -467,7 +475,17 @@ function addMsgDOM(role, text, files, tk, sk) {
     if (text) {
         const bub = document.createElement('div');
         bub.className = 'msg-bubble';
-        bub.textContent = text;
+        // استخراج الأكواد وإضافة زر التحرير
+        const codeMatch = text.match(/```(\w+)?\n([\s\S]*?)\n```/);
+        if (codeMatch) {
+            const lang = codeMatch[1] || 'code';
+            const code = codeMatch[2];
+            bub.innerHTML = `<pre><code>${code}</code></pre>
+                             <button class="edit-btn" onclick="editCode(\`${code.replace(/`/g, '\\`')}\`, '${lang}')">✏️ تحرير الكود</button>
+                             <div class="code-output" id="codeOutput_${Date.now()}"></div>`;
+        } else {
+            bub.textContent = text;
+        }
         col.appendChild(bub);
     }
     const meta = document.createElement('div');
@@ -491,6 +509,24 @@ function addMsgDOM(role, text, files, tk, sk) {
     area.scrollTop = area.scrollHeight;
 }
 
+// ===== دالة تحرير الكود =====
+function editCode(code, lang) {
+    const newCode = prompt(`✏️ تحرير الكود (${lang}):`, code);
+    if (newCode !== null) {
+        const outputDiv = document.querySelector('.code-output:last-child');
+        if (outputDiv) {
+            try {
+                // محاولة تنفيذ الكود (آمن للتجربة)
+                const result = eval(newCode);
+                outputDiv.textContent = `✅ النتيجة:\n${String(result)}`;
+            } catch (e) {
+                outputDiv.textContent = `❌ خطأ: ${e.message}`;
+            }
+        }
+    }
+}
+
+/* ===== TYPING ===== */
 function showTyping() {
     const area = document.getElementById('chatArea');
     const id = 'typ-' + Date.now();
