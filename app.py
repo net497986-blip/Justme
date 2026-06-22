@@ -9,15 +9,20 @@ import random
 import re
 import json
 import logging
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from flask import Flask, render_template, request, jsonify
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# ================= إعدادات البوت (من Environment Variables) =================
+# ================= Flask =================
+app = Flask(__name__)
+
+# ================= إعدادات البوت =================
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 MINI_APP_URL = os.environ.get("MINI_APP_URL", "https://net497986-blip.github.io/Justme/")
 
-# ================= المفاتيح (من Environment Variables) =================
+# ================= المفاتيح =================
 API_KEY_1 = os.environ.get("GROQ_API_KEY_1")
 API_KEY_2 = os.environ.get("GROQ_API_KEY_2")
 API_KEY_3 = os.environ.get("GROQ_API_KEY_3")
@@ -259,116 +264,53 @@ def clean_response(text):
     
     return '\n'.join(cleaned_lines)
 
-# ================= معالجة البيانات من Mini App =================
-async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """استقبال البيانات من Mini App والرد عليها"""
-    try:
-        data = json.loads(update.message.web_app_data.data)
-        user_message = data.get('message', '')
-        
-        if not user_message:
-            await update.message.reply_text("⚠️ لم أستقبل رسالة.")
-            return
-        
-        # معالجة الرسالة
-        response = get_response_with_load_balancing(user_message)
-        await update.message.reply_text(response, parse_mode='Markdown')
-        
-    except json.JSONDecodeError:
-        await update.message.reply_text("⚠️ خطأ في قراءة البيانات.")
-    except Exception as e:
-        await update.message.reply_text(f"⚠️ خطأ: {str(e)}")
+# ================= Flask Routes =================
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# ================= أوامر البوت =================
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    data = request.get_json()
+    user_message = data.get('message', '')
+    if not user_message:
+        return jsonify({'error': 'No message'}), 400
+    response = get_response_with_load_balancing(user_message)
+    return jsonify({'response': response})
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    welcome_text = """
-🐛 **مرحباً معك Worm GPT** 🐛
-
-🎯 أنا هنا لمساعدتك في كل ما تريد.
-
-🔓 **المطور:** @shad0w010101
-
-💬 **اكتب ما تريد وسأجيبك فوراً!**
-"""
-    
+# ================= دوال البوت =================
+async def bot_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[
         InlineKeyboardButton(
             "🚀 فتح WormGPT",
             web_app={"url": MINI_APP_URL}
         )
     ]]
-    
     await update.message.reply_text(
-        welcome_text,
+        "🐛 **مرحباً معك Worm GPT** 🐛\n\n🎯 أنا هنا لمساعدتك في كل ما تريد.\n🔓 **المطور:** @shad0w010101",
         parse_mode='Markdown',
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    help_text = """
-📚 **المساعدة**
-
-✏️ اكتب أي سؤال أو طلب وسأجيبك.
-
-**الأوامر:**
-/start - الترحيب
-/help - هذه الرسالة
-
-💬 **تواصل مع المطور:** @shad0w010101
-"""
-    await update.message.reply_text(help_text, parse_mode='Markdown')
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """معالجة رسائل المستخدم العادية"""
+async def bot_handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
-    
-    waiting_msg = await update.message.reply_text("⏳ **جاري المعالجة...**", parse_mode='Markdown')
-    
-    try:
-        response = get_response_with_load_balancing(user_message)
-        
-        if len(response) > 4096:
-            for i in range(0, len(response), 4096):
-                await update.message.reply_text(response[i:i+4096], parse_mode='Markdown')
-        else:
-            await update.message.reply_text(response, parse_mode='Markdown')
-        
-        await waiting_msg.delete()
-        
-    except Exception as e:
-        await waiting_msg.delete()
-        await update.message.reply_text(f"⚠️ **خطأ:** {str(e)}", parse_mode='Markdown')
+    waiting = await update.message.reply_text("⏳ **جاري المعالجة...**", parse_mode='Markdown')
+    reply = get_response_with_load_balancing(user_message)
+    await waiting.delete()
+    await update.message.reply_text(reply, parse_mode='Markdown')
 
-async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logger.error(f"Update {update} caused error {context.error}")
-    if update and update.message:
-        await update.message.reply_text("⚠️ **حدث خطأ. حاول مرة أخرى.**", parse_mode='Markdown')
+def run_telegram_bot():
+    application = Application.builder().token(BOT_TOKEN).build()
+    application.add_handler(CommandHandler("start", bot_start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, bot_handle_message))
+    print("🤖 Telegram Bot is running...")
+    application.run_polling()
 
-# ================= تشغيل البوت =================
-
-def main():
-    try:
-        application = Application.builder().token(BOT_TOKEN).build()
-        
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CommandHandler("help", help_command))
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-        application.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
-        application.add_error_handler(error_handler)
-        
-        print("🤖 WORM GPT BOT STARTED!")
-        print("🔗 Bot is running...")
-        print("🧠 Main Model: Llama 3 70B (OpenRouter) - Nitro")
-        print("📊 Assistant Models: 3 (Groq)")
-        print(f"🚀 Mini App: {MINI_APP_URL}")
-        print("⚡ Ready for high traffic!")
-        print("🔒 Lisa persona is hidden in the background")
-        
-        application.run_polling(allowed_updates=Update.ALL_TYPES)
-        
-    except Exception as e:
-        print(f"❌ Error: {e}")
-
-if __name__ == "__main__":
-    main()
+# ================= تشغيل التطبيق =================
+if __name__ == '__main__':
+    bot_thread = threading.Thread(target=run_telegram_bot)
+    bot_thread.daemon = True
+    bot_thread.start()
+    port = int(os.environ.get('PORT', 5000))
+    print(f"🌐 Server running on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=False)
