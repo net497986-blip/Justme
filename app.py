@@ -130,7 +130,7 @@ def call_api(user_prompt, mode="chat", files=None):
             {"role": "user", "content": f"COMMAND: {full_prompt}"}
         ],
         "temperature": 0.95,
-        "max_tokens": 4000  # زيادة كبيرة لمنع تقطيع الردود
+        "max_tokens": 5000  # زيادة كبيرة لمنع تقطيع الردود
     }
     
     try:
