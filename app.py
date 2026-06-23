@@ -6,7 +6,7 @@ import re
 import time
 import logging
 import requests
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify, render_template
 
 # ================= إعدادات Flask =================
 app = Flask(__name__)
@@ -369,39 +369,15 @@ def clean_response(text):
     
     return result
 
-# ================= كود HTML الخاص بالواجهة (ضعه هنا كاملاً) =================
-# ضع كود HTML الكامل الذي صممته بين علامتي التنصيص الثلاثية أدناه
-HTML_CODE = """<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WormGPT</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-/* ... كل الـ CSS الخاص بواجهتك ... */
-:root {
-  --red-deep:#6B0000; --red-core:#CC0000; --red-bright:#FF2020;
-  --red-glow:#FF4444; --red-soft:#FF6666;
-  --black:#080808; --dark1:#0F0F0F; --dark2:#181818; --dark3:#222;
-  --sidebar-w:270px;
-  --text:#FFF; --text-dim:#AAA; --text-muted:#555;
-}
-/* ... أكمل باقي الـ CSS ... */
-</style>
-</head>
-<body>
-<!-- كل كود HTML الخاص بواجهتك -->
-</body>
-</html>"""
-
 # ================= مسارات Flask =================
 @app.route('/')
 def index():
-    return render_template_string(HTML_CODE)
+    """يعرض واجهة المستخدم من مجلد templates/index.html"""
+    return render_template('index.html')
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    """يستقبل الرسائل من الواجهة ويعيد رد النموذج"""
     try:
         data = request.get_json()
         user_message = data.get('message', '')
@@ -439,4 +415,5 @@ if __name__ == '__main__':
     print("🧠 Main Model: Llama 3 70B (OpenRouter) - Nitro")
     print("📊 Assistant Models: 3 (Groq)")
     print("🔓 ULTIMATE JAILBREAK: ACTIVE")
+    print("📂 Templates folder: 'templates/index.html'")
     app.run(host='0.0.0.0', port=port, debug=False)
