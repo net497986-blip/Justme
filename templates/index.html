@@ -49,6 +49,13 @@ body{font-family:'Noto+Sans+Arabic','Inter',sans-serif;background:var(--black);c
 .new-chat-btn:active{transform:scale(.93);}
 .new-chat-btn svg{width:13px;height:13px;fill:#fff;}
 
+/* أزرار الاشتراك والتسجيل */
+.auth-btns{display:flex;gap:5px;align-items:center;}
+.auth-btn{background:var(--dark2);border:1px solid #2A0000;border-radius:6px;color:var(--text-dim);padding:4px 10px;font-size:11px;cursor:pointer;transition:0.2s;font-weight:500;}
+.auth-btn:hover{border-color:var(--red-core);color:#fff;}
+.auth-btn.subscribe{background:linear-gradient(135deg,var(--red-deep),var(--red-core));color:#fff;border-color:var(--red-bright);}
+.auth-btn.subscribe:hover{background:var(--red-core);}
+
 .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s;}
 .sidebar-overlay.open{opacity:1;pointer-events:all;}
 .sidebar{position:fixed;top:0;right:0;bottom:0;width:var(--sidebar-w);background:#0D0000;border-left:1px solid #220000;z-index:51;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
@@ -95,8 +102,6 @@ body{font-family:'Noto+Sans+Arabic','Inter',sans-serif;background:var(--black);c
 .ai-avatar-svg{width:16px;height:16px;fill:var(--red-glow);}
 .msg-col{display:flex;flex-direction:column;gap:3px;max-width:80%;}
 .msg-bubble{padding:10px 12px;border-radius:13px;font-size:13.5px;line-height:1.58;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;max-width:100%;}
-.msg-bubble pre{white-space:pre-wrap;word-break:break-all;overflow-wrap:break-word;max-width:100%;background:#0a0000;padding:8px;border-radius:6px;border:1px solid #2a0000;font-size:12px;color:#ff6666;}
-.msg-bubble code{white-space:pre-wrap;word-break:break-all;}
 .msg.ai .msg-bubble{background:#140000;border:1px solid #2A0000;color:#EAEAEA;border-radius:4px 13px 13px 13px;}
 .msg.user .msg-bubble{background:linear-gradient(135deg,var(--red-deep),#4A0000);border:1px solid var(--red-core);color:var(--text);border-radius:13px 4px 13px 13px;text-align:right;}
 .msg-meta{font-size:9.5px;color:var(--text-muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
@@ -104,10 +109,23 @@ body{font-family:'Noto+Sans+Arabic','Inter',sans-serif;background:var(--black);c
 .mode-tag{padding:1px 6px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:.5px;}
 .mode-tag.think{background:rgba(100,0,200,.18);color:#BB99FF;border:1px solid rgba(100,0,200,.28);}
 .mode-tag.search{background:rgba(0,100,200,.18);color:#77BBFF;border:1px solid rgba(0,100,200,.28);}
-.copy-btn{background:var(--red-core);color:#fff;border:none;padding:2px 12px;border-radius:12px;font-size:10px;cursor:pointer;margin-top:4px;transition:0.2s;font-family:inherit;}
-.copy-btn:hover{background:var(--red-bright);}
-.copy-btn:active{transform:scale(0.95);}
 
+/* زر نسخ الرد كامل */
+.copy-reply-btn{background:var(--dark2);color:var(--text-dim);border:1px solid #2A0000;border-radius:12px;padding:2px 10px;font-size:9px;cursor:pointer;transition:0.2s;font-family:inherit;margin-top:3px;display:inline-flex;align-items:center;gap:4px;}
+.copy-reply-btn:hover{border-color:var(--red-core);color:#fff;background:#1A0000;}
+.copy-reply-btn:active{transform:scale(0.95);}
+
+/* تنسيق الأكواد */
+.code-block{margin:8px 0;background:#0a0000;border:1px solid #2a0000;border-radius:6px;overflow:hidden;}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:4px 10px;background:#1a0000;border-bottom:1px solid #2a0000;}
+.code-lang{font-size:12px;font-weight:600;color:#cc6666;text-transform:uppercase;font-family:'Inter',sans-serif;}
+.code-header .copy-btn{background:var(--red-core);color:#fff;border:none;padding:2px 10px;border-radius:12px;font-size:10px;cursor:pointer;transition:0.2s;font-family:inherit;}
+.code-header .copy-btn:hover{background:var(--red-bright);}
+.code-header .copy-btn:active{transform:scale(0.95);}
+.code-block pre{margin:0;padding:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;background:transparent;border:none;max-height:400px;overflow-y:auto;}
+.code-block code{font-family:'Courier New',monospace;font-size:13px;color:#ff6666;line-height:1.5;}
+
+/* باقي العناصر */
 .thinking{display:flex;align-items:center;gap:8px;padding:11px 13px;background:#140000;border:1px solid #2A0000;border-radius:4px 13px 13px 13px;}
 .thinking-text{font-size:12px;color:var(--text-muted);font-style:italic;}
 .dots{display:flex;gap:4px;}
@@ -120,17 +138,6 @@ body{font-family:'Noto+Sans+Arabic','Inter',sans-serif;background:var(--black);c
 .file-icon-msg svg{width:15px;height:15px;fill:#fff;}
 .file-name{font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
 .file-size{font-size:9px;color:var(--text-muted);}
-
-.settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#0D0000;border:1px solid var(--red-core);border-radius:16px;padding:24px;z-index:100;width:90%;max-width:400px;display:none;box-shadow:0 0 60px rgba(204,0,0,.15);}
-.settings-panel.open{display:block;}
-.settings-panel h3{color:var(--red-bright);font-family:'Orbitron',monospace;font-size:16px;margin-bottom:16px;text-align:center;}
-.settings-panel label{display:block;color:var(--text-dim);font-size:12px;margin-bottom:4px;margin-top:12px;}
-.settings-panel select,.settings-panel input{width:100%;padding:8px 12px;background:var(--dark2);border:1px solid #2A0000;border-radius:8px;color:#fff;font-family:inherit;font-size:13px;outline:none;}
-.settings-panel select:focus,.settings-panel input:focus{border-color:var(--red-core);}
-.settings-panel .close-settings{background:var(--red-core);color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;margin-top:16px;width:100%;font-weight:600;}
-.settings-panel .close-settings:hover{background:var(--red-bright);}
-.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;display:none;}
-.settings-overlay.open{display:block;}
 
 .input-wrap{position:relative;z-index:5;padding:8px 11px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:rgba(8,0,0,.97);border-top:1px solid #170000;flex-shrink:0;}
 .file-preview-strip{display:none;gap:7px;margin-bottom:7px;overflow-x:auto;scrollbar-width:none;}
@@ -161,6 +168,15 @@ body{font-family:'Noto+Sans+Arabic','Inter',sans-serif;background:var(--black);c
 .send-btn svg{width:17px;height:17px;fill:#fff;}
 input[type=file]{display:none;}
 
+/* رسالة "قريباً" المنبثقة */
+.coming-soon-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.coming-soon-overlay.open{opacity:1;pointer-events:all;}
+.coming-soon-box{background:#0D0000;border:2px solid var(--red-core);border-radius:16px;padding:30px 40px;text-align:center;box-shadow:0 0 60px rgba(204,0,0,.2);max-width:90%;}
+.coming-soon-box h2{font-family:'Orbitron',monospace;font-size:22px;color:var(--red-bright);margin-bottom:10px;}
+.coming-soon-box p{font-size:16px;color:var(--text-dim);margin-bottom:20px;}
+.coming-soon-box .close-cs{background:var(--red-core);color:#fff;border:none;padding:8px 30px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:0.2s;}
+.coming-soon-box .close-cs:hover{background:var(--red-bright);}
+
 @media(max-width:480px){
   .header{padding:8px 10px;}
   .logo-name{font-size:12px;}
@@ -168,9 +184,10 @@ input[type=file]{display:none;}
   .new-chat-btn{font-size:10px;padding:4px 8px;}
   .lang-btn{font-size:9px;padding:3px 6px;}
   .settings-btn{font-size:12px;padding:3px 8px;}
+  .auth-btn{font-size:9px;padding:3px 6px;}
   .msg-bubble{font-size:12px;padding:8px 10px;}
   .msg-col{max-width:90%;}
-  .settings-panel{width:95%;padding:16px;}
+  .coming-soon-box{padding:20px;}
 }
 </style>
 </head>
@@ -203,10 +220,14 @@ input[type=file]{display:none;}
     </div>
   </div>
   <div class="h-right">
+    <div class="auth-btns">
+      <button class="auth-btn subscribe" onclick="showComingSoon()">اشتراك</button>
+      <button class="auth-btn" onclick="showComingSoon()">تسجيل دخول</button>
+    </div>
     <button class="lang-btn active" data-lang="ar" onclick="setLang('ar')">عربي</button>
     <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
     <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
-    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+    <button class="settings-btn" onclick="showComingSoon()">⚙️</button>
     <div class="new-chat-btn" onclick="newChat()">
       <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       <span id="newChatLabel">جديد</span>
@@ -230,33 +251,13 @@ input[type=file]{display:none;}
   <div class="sb-list" id="sbList"></div>
 </div>
 
-<!-- SETTINGS -->
-<div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
-<div class="settings-panel" id="settingsPanel">
-  <h3>⚙️ <span id="settingsTitle">الإعدادات</span></h3>
-  
-  <label id="langLabel">🌐 اللغة</label>
-  <select id="settingsLang" onchange="setLang(this.value)">
-    <option value="ar">العربية</option>
-    <option value="en">English</option>
-    <option value="ru">Русский</option>
-  </select>
-  
-  <label id="themeLabel">🎨 المظهر</label>
-  <select id="settingsTheme" onchange="setTheme(this.value)">
-    <option value="dark">داكن</option>
-    <option value="light">فاتح</option>
-    <option value="red">أحمر</option>
-  </select>
-  
-  <label id="modelLabel">🧠 النموذج</label>
-  <select id="settingsModel" onchange="saveModelPreference(this.value)">
-    <option value="v3">WormGPT v3 (سريع)</option>
-    <option value="v6" selected>WormGPT v6 (قوي)</option>
-    <option value="mix">مختلط (v3 + v6)</option>
-  </select>
-  
-  <button class="close-settings" onclick="toggleSettings()" id="settingsClose">✕ إغلاق</button>
+<!-- COMING SOON OVERLAY -->
+<div class="coming-soon-overlay" id="csOverlay" onclick="hideComingSoon(event)">
+  <div class="coming-soon-box" onclick="event.stopPropagation();">
+    <h2>🔜 قريباً</h2>
+    <p id="csMessage">هذه الميزة قيد التطوير وستتوفر قريباً.</p>
+    <button class="close-cs" onclick="hideComingSoon()">حسناً</button>
+  </div>
 </div>
 
 <!-- CHAT -->
@@ -312,7 +313,8 @@ const translations = {
     noChats: 'لا توجد محادثات بعد', copyBtn: '📋 نسخ الكود',
     copied: '✅ تم نسخ الكود إلى الحافظة!', error: '⚠️ حدث خطأ في المعالجة.',
     thinking: 'يفكر...', searching: 'يبحث...', typing: 'يكتب...',
-    fileUpload: '📎 ملف'
+    fileUpload: '📎 ملف', copyReply: '📋 نسخ الرد',
+    csMessage: 'هذه الميزة قيد التطوير وستتوفر قريباً.'
   },
   en: {
     logoSub: 'AI ENGINE', newChat: 'New', sidebarTitle: 'Chats',
@@ -323,7 +325,8 @@ const translations = {
     noChats: 'No chats yet', copyBtn: '📋 Copy Code',
     copied: '✅ Code copied to clipboard!', error: '⚠️ An error occurred.',
     thinking: 'Thinking...', searching: 'Searching...', typing: 'Typing...',
-    fileUpload: '📎 File'
+    fileUpload: '📎 File', copyReply: '📋 Copy Reply',
+    csMessage: 'This feature is under development and will be available soon.'
   },
   ru: {
     logoSub: 'AI ДВИЖОК', newChat: 'Новый', sidebarTitle: 'Чаты',
@@ -334,7 +337,8 @@ const translations = {
     noChats: 'Чатов пока нет', copyBtn: '📋 Копировать код',
     copied: '✅ Код скопирован!', error: '⚠️ Произошла ошибка.',
     thinking: 'Думает...', searching: 'Ищет...', typing: 'Печатает...',
-    fileUpload: '📎 Файл'
+    fileUpload: '📎 Файл', copyReply: '📋 Копировать ответ',
+    csMessage: 'Эта функция находится в разработке и будет доступна скоро.'
   }
 };
 
@@ -345,7 +349,6 @@ function setLang(lang) {
   currentLang = lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[data-lang="${lang}"]`)?.classList.add('active');
-  document.getElementById('settingsLang').value = lang;
   applyTranslations(lang);
   updatePlaceholder();
 }
@@ -357,15 +360,11 @@ function applyTranslations(lang) {
   document.getElementById('newChatLabel').textContent = t.newChat;
   document.getElementById('sidebarTitle').textContent = t.sidebarTitle;
   document.getElementById('sidebarNewChat').textContent = t.sidebarNewChat;
-  document.getElementById('settingsTitle').textContent = t.settingsTitle;
-  document.getElementById('langLabel').textContent = t.langLabel;
-  document.getElementById('themeLabel').textContent = t.themeLabel;
-  document.getElementById('modelLabel').textContent = t.modelLabel;
-  document.getElementById('settingsClose').textContent = t.settingsClose;
   document.getElementById('thinkLabel').textContent = t.thinkLabel;
   document.getElementById('searchLabel').textContent = t.searchLabel;
   document.getElementById('centerDev').textContent = t.centerDev;
   document.getElementById('msgInput').placeholder = t.placeholder;
+  document.querySelectorAll('.copy-reply-btn').forEach(b => b.textContent = t.copyReply || '📋 نسخ الرد');
 }
 
 function updatePlaceholder() {
@@ -375,7 +374,6 @@ function updatePlaceholder() {
 
 function setTheme(theme) {
   currentTheme = theme;
-  document.getElementById('settingsTheme').value = theme;
   const root = document.documentElement;
   if (theme === 'light') {
     root.style.setProperty('--black', '#f0f0f0');
@@ -402,11 +400,6 @@ function setTheme(theme) {
     root.style.setProperty('--dark2', '#181818');
     root.style.setProperty('--dark3', '#222');
   }
-}
-
-function toggleSettings() {
-  document.getElementById('settingsPanel').classList.toggle('open');
-  document.getElementById('settingsOverlay').classList.toggle('open');
 }
 
 function saveModelPreference(model) {
@@ -550,6 +543,19 @@ function renderFileStrip() {
   });
 }
 
+// ===== FUNCTIONS FOR COMING SOON =====
+function showComingSoon() {
+  document.getElementById('csOverlay').classList.add('open');
+  const msg = document.getElementById('csMessage');
+  msg.textContent = translations[currentLang].csMessage || 'هذه الميزة قيد التطوير وستتوفر قريباً.';
+}
+
+function hideComingSoon(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('csOverlay').classList.remove('open');
+}
+
+// ===== SEND MESSAGE =====
 async function sendMsg() {
   const inp = document.getElementById('msgInput');
   const text = inp.value.trim();
@@ -606,6 +612,49 @@ async function sendMsg() {
 
 const OPENAI_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="width:14px;height:14px;fill:var(--red-glow);"><path d="M14.949 6.547a3.94 3.94 0 0 0-.348-3.273 4.11 4.11 0 0 0-4.4-1.934A4.1 4.1 0 0 0 8.423.2 4.15 4.15 0 0 0 6.305.086a4.1 4.1 0 0 0-1.891.948 4.04 4.04 0 0 0-1.158 1.753 4.1 4.1 0 0 0-1.563.679A4 4 0 0 0 .554 4.72a3.99 3.99 0 0 0 .502 4.731 3.94 3.94 0 0 0 .346 3.274 4.11 4.11 0 0 0 4.402 1.933c.382.425.852.764 1.377.995.526.231 1.095.35 1.67.346 1.78.002 3.358-1.132 3.901-2.804a4.1 4.1 0 0 0 1.563-.68 4 4 0 0 0 1.14-1.253 3.99 3.99 0 0 0-.506-4.716m-6.097 8.406a3.05 3.05 0 0 1-1.945-.694l.096-.054 3.23-1.838a.53.53 0 0 0 .265-.455v-4.49l1.366.778q.02.011.025.035v3.722c-.003 1.653-1.361 2.992-3.037 2.996m-6.53-2.75a2.95 2.95 0 0 1-.36-2.01l.095.057L5.29 12.09a.53.53 0 0 0 .527 0l3.949-2.246v1.555a.05.05 0 0 1-.022.041L6.473 13.3c-1.454.826-3.311.335-4.15-1.098m-.85-6.94A3.02 3.02 0 0 1 3.07 3.949v3.785a.51.51 0 0 0 .262.451l3.93 2.237-1.366.779a.05.05 0 0 1-.048 0L2.585 9.342a2.98 2.98 0 0 1-1.113-4.094zm11.216 2.571L8.747 5.576l1.362-.776a.05.05 0 0 1 .048 0l3.265 1.86a3 3 0 0 1 1.173 1.207 2.96 2.96 0 0 1-.27 3.2 3.05 3.05 0 0 1-1.36.997V8.279a.52.52 0 0 0-.276-.445m1.36-2.015-.097-.057-3.226-1.855a.53.53 0 0 0-.53 0L6.249 6.153V4.598a.04.04 0 0 1 .019-.04L9.533 2.7a3.07 3.07 0 0 1 3.257.139c.474.325.843.778 1.066 1.303.223.526.289 1.103.191 1.664zM5.503 8.575 4.139 7.8a.05.05 0 0 1-.026-.037V4.049c0-.57.166-1.127.476-1.607s.752-.864 1.275-1.105a3.08 3.08 0 0 1 3.234.41l-.096.054-3.23 1.838a.53.53 0 0 0-.265.455zm.742-1.577 1.758-1 1.762 1v2l-1.755 1-1.762-1z"/></svg>`;
 
+// ===== FORMAT MESSAGE (CODE BLOCKS + TEXT) =====
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatMessage(text) {
+  if (!text) return '';
+  
+  // استخراج جميع الأكواد مع لغة كل منها
+  let blocks = [];
+  let processed = text.replace(/```(\w+)?\n([\s\S]*?)\n```/g, function(match, lang, code) {
+    blocks.push({lang: lang || 'code', code: code});
+    return `__CODE_BLOCK_${blocks.length-1}__`;
+  });
+  
+  // ترميز النص العادي (غير الكود)
+  processed = escHtml(processed);
+  
+  // إعادة بناء النص مع تنسيق الأكواد
+  const t = translations[currentLang];
+  let result = processed.replace(/__CODE_BLOCK_(\d+)__/g, function(match, index) {
+    const block = blocks[parseInt(index)];
+    if (!block) return match;
+    const code = escHtml(block.code);
+    const langLabel = block.lang || 'code';
+    return `<div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">${langLabel}</span>
+        <button class="copy-btn" onclick="copyCode(${JSON.stringify(block.code)})">${t.copyBtn || '📋 نسخ الكود'}</button>
+      </div>
+      <pre><code>${code}</code></pre>
+    </div>`;
+  });
+  
+  // تحويل الأسطر الفارغة المتعددة إلى فقرات
+  result = result.replace(/\n\n/g, '<br><br>');
+  result = result.replace(/\n/g, '<br>');
+  
+  return result;
+}
+
+// ===== ADD MESSAGE DOM =====
 function addMsgDOM(role, text, files, tk, sk) {
   const area = document.getElementById('chatArea');
   const now = new Date().toLocaleTimeString('ar', { hour:'2-digit', minute:'2-digit' });
@@ -630,20 +679,24 @@ function addMsgDOM(role, text, files, tk, sk) {
       col.appendChild(fm);
     });
   }
+  
   if (text) {
     const bub = document.createElement('div');
     bub.className = 'msg-bubble';
-    const codeMatch = text.match(/```(\w+)?\n([\s\S]*?)\n```/);
-    if (codeMatch) {
-      const lang = codeMatch[1] || 'code';
-      const code = codeMatch[2];
-      bub.innerHTML = `<pre><code>${code}</code></pre>
-                       <button class="copy-btn" onclick="copyCode(\`${code.replace(/`/g, '\\`')}\`)">${translations[currentLang].copyBtn || '📋 نسخ الكود'}</button>`;
-    } else {
-      bub.textContent = text;
-    }
+    bub.innerHTML = formatMessage(text);
     col.appendChild(bub);
+    
+    // إذا كان الرد من الـ AI، أضف زر نسخ الرد كامل
+    if (role === 'ai') {
+      const copyReplyBtn = document.createElement('button');
+      copyReplyBtn.className = 'copy-reply-btn';
+      const t = translations[currentLang];
+      copyReplyBtn.textContent = t.copyReply || '📋 نسخ الرد';
+      copyReplyBtn.onclick = () => copyFullReply(text);
+      col.appendChild(copyReplyBtn);
+    }
   }
+
   const meta = document.createElement('div');
   meta.className = 'msg-meta';
   if (role === 'ai') {
@@ -659,6 +712,7 @@ function addMsgDOM(role, text, files, tk, sk) {
   area.scrollTop = area.scrollHeight;
 }
 
+// ===== COPY FUNCTIONS =====
 function copyCode(code) {
   navigator.clipboard.writeText(code).then(() => {
     alert(translations[currentLang].copied || '✅ تم نسخ الكود إلى الحافظة!');
@@ -673,6 +727,21 @@ function copyCode(code) {
   });
 }
 
+function copyFullReply(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert(translations[currentLang].copied || '✅ تم نسخ الرد إلى الحافظة!');
+  }).catch(() => {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert(translations[currentLang].copied || '✅ تم نسخ الرد إلى الحافظة!');
+  });
+}
+
+// ===== TYPING INDICATOR =====
 function showTyping() {
   const area = document.getElementById('chatArea');
   const id = 'typ-' + Date.now();
@@ -687,25 +756,25 @@ function showTyping() {
 
 function removeTyping(id) { document.getElementById(id)?.remove(); }
 
+// ===== UTILITY =====
 function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b/1024).toFixed(1)+' KB'; return (b/1048576).toFixed(1)+' MB'; }
 function fmtDate(ts) { const d = new Date(ts); return d.toLocaleDateString('ar', { month:'short', day:'numeric' }); }
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// INIT
+// ===== INIT =====
 const savedLang = localStorage.getItem('wgpt_lang') || 'ar';
 const savedTheme = localStorage.getItem('wgpt_theme') || 'dark';
 setLang(savedLang);
 setTheme(savedTheme);
-document.getElementById('settingsLang').addEventListener('change', function() {
+document.getElementById('settingsLang')?.addEventListener('change', function() {
   localStorage.setItem('wgpt_lang', this.value);
   setLang(this.value);
 });
-document.getElementById('settingsTheme').addEventListener('change', function() {
+document.getElementById('settingsTheme')?.addEventListener('change', function() {
   localStorage.setItem('wgpt_theme', this.value);
   setTheme(this.value);
 });
 
-console.log('🐛 WormGPT v6 loaded with multi-language & model selection!');
+console.log('🐛 WormGPT v6 loaded with full features!');
 </script>
 </body>
 </html>
