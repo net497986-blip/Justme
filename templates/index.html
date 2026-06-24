@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Base (same as before, plus additions) ── */
+        /* ── Base ── */
         :root {
             --red-deep: #6B0000;
             --red-core: #CC0000;
@@ -113,8 +113,10 @@
         .sb-user-info { flex:1; min-width:0; }
         .sb-user-name { font-size:14px; font-weight:600; color:#fff; line-height:1.2; }
         .sb-user-email { font-size:11px; color:var(--text-muted); }
-        .sb-user-balance { font-size:11px; color:var(--red-soft); margin-top:2px; }
+        .sb-user-balance { font-size:11px; color:var(--red-soft); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
         .sb-user-balance .infinity { font-size:16px; color:var(--red-bright); }
+        .sb-user-balance .subscription-badge { background:var(--red-core); color:#fff; padding:0 6px; border-radius:10px; font-size:9px; font-weight:700; }
+        .sb-user-balance .expiry { font-size:10px; color:var(--text-muted); }
         .sb-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #1E0000; flex-shrink:0; }
         .sb-title { font-family:'Orbitron',monospace; font-size:12px; font-weight:700; color:var(--red-bright); letter-spacing:1px; }
         .sb-close { width:30px; height:30px; background:var(--dark2); border:1px solid #2A0000; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
@@ -185,6 +187,9 @@
         /* ── Embed settings styles ── */
         .settings-inner {
             padding:0 16px 24px;
+            --bg:#141414; --surface:#1e1e1e; --card:#242424; --card2:#2a2a2a;
+            --border:rgba(255,255,255,0.07); --red:#e03030; --red-dim:rgba(224,48,48,0.12);
+            --text:#f0f0f0; --muted:#777; --green:#34c759;
         }
         .settings-inner .page { display:none; flex-direction:column; }
         .settings-inner .page.active { display:flex; }
@@ -274,8 +279,6 @@
         .settings-inner .logo-circle svg { width:36px; height:36px; stroke:var(--red); fill:none; stroke-width:1.6; }
         .settings-inner .about-name { font-size:22px; font-weight:800; }
         .settings-inner .about-ver { font-size:13px; color:var(--muted); }
-        /* override some colors for settings inside */
-        .settings-inner { --bg:#141414; --surface:#1e1e1e; --card:#242424; --card2:#2a2a2a; --border:rgba(255,255,255,0.07); --red:#e03030; --red-dim:rgba(224,48,48,0.12); --text:#f0f0f0; --muted:#777; --green:#34c759; }
         .settings-inner .page { background:transparent; }
 
         /* ── TOAST ── */
@@ -286,6 +289,30 @@
             z-index:400; pointer-events:none; white-space:nowrap;
         }
         .toast.show { transform:translateX(-50%) translateY(0); }
+
+        /* ── TOKEN WARNING UNDER INPUT ── */
+        .token-warning {
+            display:none;
+            background:rgba(204,0,0,.15);
+            border:1px solid var(--red-core);
+            border-radius:8px;
+            padding:6px 10px;
+            margin-top:4px;
+            font-size:11px;
+            color:var(--red-soft);
+            text-align:center;
+            gap:6px;
+            align-items:center;
+            justify-content:center;
+        }
+        .token-warning.show { display:flex; }
+        .token-warning .upgrade-link {
+            color:var(--red-bright);
+            font-weight:700;
+            cursor:pointer;
+            text-decoration:underline;
+        }
+        .token-warning .upgrade-link:hover { color:#fff; }
 
         /* ── LOGIN ── */
         .login-overlay {
@@ -400,7 +427,11 @@
         .send-btn svg { width:16px; height:16px; fill:#fff; }
         input[type=file] { display:none; }
 
-        /* ── RESPONSIVE ── */
+        .token-warning { display:none; background:rgba(204,0,0,.15); border:1px solid var(--red-core); border-radius:8px; padding:6px 10px; margin-top:6px; font-size:11px; color:var(--red-soft); text-align:center; gap:6px; align-items:center; justify-content:center; }
+        .token-warning.show { display:flex; }
+        .token-warning .upgrade-link { color:var(--red-bright); font-weight:700; cursor:pointer; text-decoration:underline; }
+        .token-warning .upgrade-link:hover { color:#fff; }
+
         @media(max-width:480px) {
             .header { padding:6px 8px; }
             .logo-name { font-size:11px; }
@@ -492,7 +523,11 @@
                 <div class="sb-user-info">
                     <div class="sb-user-name" id="userName">Shad0w</div>
                     <div class="sb-user-email" id="userEmail">user@wormgpt.local</div>
-                    <div class="sb-user-balance">💰 <span id="balanceLabel">الرصيد</span>: <span id="userTokens">∞</span></div>
+                    <div class="sb-user-balance" id="userBalance">
+                        <span>💰 <span id="balanceLabel">الرصيد</span>: <span id="userTokens">∞</span></span>
+                        <span id="subscriptionBadgeContainer"></span>
+                        <span id="subscriptionExpiry" class="expiry"></span>
+                    </div>
                 </div>
             </div>
 
@@ -508,7 +543,7 @@
             </div>
             <div class="sb-list" id="sbList"></div>
 
-            <!-- Sidebar subscription (same as before) -->
+            <!-- Sidebar subscription -->
             <div class="sb-subscription">
                 <div class="sb-sub-title">💎 <span id="subTitle">الاشتراك</span> <span class="infinity">∞</span></div>
                 <div class="sb-plans" id="plansContainer">
@@ -537,9 +572,7 @@
                 <div class="settings-full-close">
                     <button onclick="closeSettingsFull()">✕</button>
                 </div>
-                <div class="settings-inner" id="settingsInner">
-                    <!-- Settings content will be injected via JS -->
-                </div>
+                <div class="settings-inner" id="settingsInner"></div>
             </div>
         </div>
 
@@ -592,6 +625,10 @@
                 </button>
             </div>
             <input type="file" id="fileInput" multiple accept="*/*" onchange="handleFiles(this.files)">
+            <!-- Token warning -->
+            <div class="token-warning" id="tokenWarning">
+                <span id="tokenWarningText">⚠️ رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscription()">ترقية حسابك</span>.</span>
+            </div>
         </div>
 
     </div>
@@ -601,6 +638,7 @@
         //  جافا سكريبت النهائي - WormGPT (مدمج مع الإعدادات الكاملة)
         // ================================================================
 
+        // ── الترجمات الشاملة ──
         const translations = {
             ar: {
                 logoSub: 'AI ENGINE', newChat: 'جديد', sidebarTitle: 'المحادثات',
@@ -620,11 +658,18 @@
                 activationError: '❌ كود التفعيل غير صحيح أو مستخدم مسبقاً',
                 activationUsed: '⚠️ هذا الكود مستخدم مسبقاً',
                 planActivated: '✅ تم تفعيل الاشتراك: ', soonMessage: 'هذه الميزة قيد التطوير وستتوفر قريباً.',
-                noTokens: '⚠️ رصيدك من التوكنات نفد. يرجى ترقية حسابك.',
+                noTokens: '⚠️ رصيد التوكنات نفد. يرجى ترقية حسابك.',
                 tokenUsed: 'تم استهلاك 1 توكن.', subscriptionExpired: '⚠️ انتهت صلاحية اشتراكك. يرجى التجديد.',
                 settingsTitle: 'الإعدادات', settingsClose: 'إغلاق',
                 subscribeTitle: 'الاشتراك', subscribeDesc: 'اختر الباقة المناسبة لك',
-                buyNow: 'شراء الآن', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'}
+                buyNow: 'شراء الآن', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'},
+                subscriptionActive: '✅ اشتراك نشط',
+                subscriptionExpiryLabel: 'تنتهي في',
+                tokenWarningText: '⚠️ رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscription()">ترقية حسابك</span>.',
+                privacyTitle: 'سياسة الخصوصية',
+                termsTitle: 'شروط الاستخدام',
+                privacyContent: `نحن في WormGPT نلتزم بحماية خصوصية مستخدمينا. يتم جمع البيانات الأساسية مثل اسم المستخدم وعنوان البريد الإلكتروني فقط لتوفير الخدمة. لا نقوم بمشاركة بياناتك مع أطراف ثالثة إلا بموجب قانون أو بأمر قضائي. جميع المحادثات مشفرة ولا يتم تخزينها بشكل دائم. يمكنك طلب حذف بياناتك في أي وقت. نستخدم ملفات تعريف الارتباط لتحسين تجربة المستخدم. باستخدامك للخدمة، أنت توافق على هذه السياسة.`,
+                termsContent: `باستخدامك WormGPT فإنك توافق على الالتزام بالقوانين المحلية والدولية. يحظر استخدام الخدمة في الأنشطة غير القانونية أو الضارة. جميع المحتوى المقدم من المستخدمين هو مسؤوليتهم الشخصية. نحتفظ بالحق في إنهاء الحساب في حالة انتهاك الشروط. الخدمة متوفرة "كما هي" دون أي ضمانات. الأسعار قابلة للتغيير. الاشتراكات غير قابلة للاسترداد.`
             },
             en: {
                 logoSub: 'AI ENGINE', newChat: 'New', sidebarTitle: 'Chats',
@@ -648,7 +693,14 @@
                 tokenUsed: '1 token consumed.', subscriptionExpired: '⚠️ Your subscription has expired. Please renew.',
                 settingsTitle: 'Settings', settingsClose: 'Close',
                 subscribeTitle: 'Subscription', subscribeDesc: 'Choose your plan',
-                buyNow: 'Buy Now', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'}
+                buyNow: 'Buy Now', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'},
+                subscriptionActive: '✅ Subscription active',
+                subscriptionExpiryLabel: 'Expires on',
+                tokenWarningText: '⚠️ Your token balance is empty. Please <span class="upgrade-link" onclick="openSubscription()">upgrade your account</span>.',
+                privacyTitle: 'Privacy Policy',
+                termsTitle: 'Terms of Service',
+                privacyContent: `At WormGPT, we are committed to protecting your privacy. We collect basic data such as username and email address only to provide the service. We do not share your data with third parties except as required by law. All conversations are encrypted and not stored permanently. You may request deletion of your data at any time. We use cookies to improve user experience. By using the service, you agree to this policy.`,
+                termsContent: `By using WormGPT you agree to comply with all applicable laws. The service may not be used for illegal or harmful activities. All content provided by users is their own responsibility. We reserve the right to terminate accounts that violate these terms. The service is provided "as is" without any warranties. Prices are subject to change. Subscriptions are non-refundable.`
             },
             ru: {
                 logoSub: 'AI ДВИЖОК', newChat: 'Новый', sidebarTitle: 'Чаты',
@@ -672,11 +724,18 @@
                 tokenUsed: '1 токен использован.', subscriptionExpired: '⚠️ Ваша подписка истекла. Пожалуйста, продлите.',
                 settingsTitle: 'Настройки', settingsClose: 'Закрыть',
                 subscribeTitle: 'Подписка', subscribeDesc: 'Выберите свой план',
-                buyNow: 'Купить', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'}
+                buyNow: 'Купить', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'},
+                subscriptionActive: '✅ Подписка активна',
+                subscriptionExpiryLabel: 'Истекает',
+                tokenWarningText: '⚠️ Ваш баланс токенов пуст. Пожалуйста, <span class="upgrade-link" onclick="openSubscription()">обновите аккаунт</span>.',
+                privacyTitle: 'Политика конфиденциальности',
+                termsTitle: 'Условия использования',
+                privacyContent: `В WormGPT мы стремимся защищать вашу конфиденциальность. Мы собираем только основные данные, такие как имя пользователя и адрес электронной почты, для предоставления услуги. Мы не передаем ваши данные третьим лицам, за исключением случаев, предусмотренных законом. Все разговоры зашифрованы и не хранятся постоянно. Вы можете запросить удаление ваших данных в любое время. Мы используем файлы cookie для улучшения пользовательского опыта. Используя сервис, вы соглашаетесь с этой политикой.`,
+                termsContent: `Используя WormGPT, вы соглашаетесь соблюдать все применимые законы. Сервис не может использоваться для незаконной или вредоносной деятельности. Весь контент, предоставленный пользователями, является их личной ответственностью. Мы оставляем за собой право прекращать действие учетных записей, нарушающих эти условия. Сервис предоставляется "как есть" без каких-либо гарантий. Цены могут быть изменены. Подписки не подлежат возврату.`
             }
         };
 
-        // ── Global state ──
+        // ── State ──
         let currentLang = 'ar',
             currentTheme = 'dark',
             thinkOn = false,
@@ -692,6 +751,7 @@
         let activeSubscription = localStorage.getItem('wgpt_subscription') || null;
         let subscriptionEnd = localStorage.getItem('wgpt_sub_end') || null;
 
+        // ── Valid codes (new list) ──
         const VALID_CODES = {
             'Shad0w:1mfhsjcjfnsckcjdff': 'month',
             'Shad0w:3mfisixjfieicjfjfjdjc': '3months',
@@ -702,7 +762,9 @@
             'Shad0w:3miyetsjtskgskade': '3months',
             'Shad0w:6mwtkysksgksgks': '6months',
             'Shad0w:1ydhlydkgsktakfjr': 'year',
-            'Shad0w:LLsfjfsjfsjtsktskstk': 'lifetime'
+            'Shad0w:LLsfjfsjfsjtsktskstk': 'lifetime',
+            'Shad0w:1mkyydksyksyktsk': 'month',
+            'Shad0w:3mafktKtaktaktsf': '3months'
         };
         const PLAN_DURATIONS = { month: 30, '3months': 90, '6months': 180, year: 365, lifetime: -1 };
         const PLAN_PRICES = { month: 20, '3months': 50, '6months': 80, year: 230, lifetime: 500 };
@@ -755,11 +817,51 @@
             document.getElementById('userName').textContent = currentUser.username || 'زائر';
             document.getElementById('userEmail').textContent = currentUser.email || '';
             document.getElementById('userAvatar').textContent = currentUser.username ? currentUser.username.charAt(0).toUpperCase() : '?';
-            document.getElementById('userTokens').textContent = currentUser.role === 'dev' ? '∞' : (currentUser.tokens ?? 0);
+            // Tokens
+            const tokenDisplay = currentUser.role === 'dev' ? '∞' : (currentUser.tokens ?? 0);
+            document.getElementById('userTokens').textContent = tokenDisplay;
+            // Subscription badge
+            const badgeContainer = document.getElementById('subscriptionBadgeContainer');
+            const expiryEl = document.getElementById('subscriptionExpiry');
+            const t = translations[currentLang];
+            if (activeSubscription && checkSubscriptionActive()) {
+                badgeContainer.innerHTML = `<span class="subscription-badge">${t.subscriptionActive || '✅ اشتراك نشط'}</span>`;
+                if (subscriptionEnd) {
+                    const endDate = new Date(subscriptionEnd);
+                    expiryEl.textContent = `${t.subscriptionExpiryLabel || 'تنتهي في'}: ${endDate.toLocaleDateString()}`;
+                } else {
+                    expiryEl.textContent = '♾️ مدى الحياة';
+                }
+            } else {
+                badgeContainer.innerHTML = '';
+                expiryEl.textContent = '';
+            }
+            // Token warning
+            const warning = document.getElementById('tokenWarning');
+            const warningText = document.getElementById('tokenWarningText');
+            if (currentUser.role !== 'dev' && currentUser.tokens <= 0 && !activeSubscription) {
+                warning.classList.add('show');
+                warningText.innerHTML = t.tokenWarningText || '⚠️ رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscription()">ترقية حسابك</span>.';
+            } else {
+                warning.classList.remove('show');
+            }
+            // Update sidebar plans prices based on language
+            document.querySelectorAll('.sb-plan').forEach(el => {
+                const plan = el.dataset.plan;
+                if (t.planPrices && t.planPrices[plan]) {
+                    el.querySelector('.price').textContent = t.planPrices[plan];
+                }
+            });
         }
 
         function consumeToken() {
             if (currentUser.role === 'dev') return true;
+            // Check active subscription first
+            if (activeSubscription && checkSubscriptionActive()) {
+                // Subscription active -> unlimited tokens
+                return true;
+            }
+            // Otherwise consume from token balance
             if (currentUser.tokens > 0) {
                 currentUser.tokens--;
                 localStorage.setItem('wgpt_user', JSON.stringify(currentUser));
@@ -767,6 +869,7 @@
                 return true;
             }
             toast(translations[currentLang].noTokens);
+            updateUserUI();
             return false;
         }
 
@@ -775,6 +878,13 @@
             currentUser.tokens = (currentUser.tokens || 0) + amount;
             localStorage.setItem('wgpt_user', JSON.stringify(currentUser));
             updateUserUI();
+        }
+
+        function checkSubscriptionActive() {
+            if (currentUser.role === 'dev') return true;
+            if (!activeSubscription) return false;
+            if (subscriptionEnd === null) return true; // lifetime
+            return new Date() <= new Date(subscriptionEnd);
         }
 
         // ── Subscription (sidebar) ──
@@ -788,14 +898,15 @@
         function checkActivation() {
             const code = document.getElementById('activationCode').value.trim();
             const status = document.getElementById('activationStatus');
+            const t = translations[currentLang];
             if (usedCodes.includes(code)) {
-                status.textContent = translations[currentLang].activationUsed;
+                status.textContent = t.activationUsed;
                 status.style.color = '#FFAA00';
             } else if (VALID_CODES[code]) {
-                status.textContent = '✅ ' + (translations[currentLang].activationSuccess || 'كود صالح! اضغط تفعيل');
+                status.textContent = '✅ ' + (t.activationSuccess || 'كود صالح! اضغط تفعيل');
                 status.style.color = '#66FF66';
             } else if (code.length > 0) {
-                status.textContent = translations[currentLang].activationError;
+                status.textContent = t.activationError;
                 status.style.color = '#FF4444';
             } else { status.textContent = ''; }
         }
@@ -818,6 +929,7 @@
                 const duration = PLAN_DURATIONS[plan];
                 if (duration === -1) { subscriptionEnd = null; } else { const endDate = new Date(); endDate.setDate(endDate.getDate() + duration); subscriptionEnd = endDate.toISOString(); }
                 localStorage.setItem('wgpt_sub_end', subscriptionEnd);
+                // Give bonus tokens if user is not dev
                 if (currentUser.role === 'user') addTokens(50);
                 status.textContent = (t.activationSuccess || '✅ تم التفعيل بنجاح! الاشتراك: ') + activeSubscription;
                 status.style.color = '#66FF66';
@@ -829,17 +941,6 @@
                 status.textContent = t.activationError;
                 status.style.color = '#FF4444';
             }
-        }
-
-        function checkSubscription() {
-            if (currentUser.role === 'dev') return true;
-            if (!activeSubscription) return false;
-            if (subscriptionEnd === null) return true;
-            if (new Date() > new Date(subscriptionEnd)) {
-                toast(translations[currentLang].subscriptionExpired);
-                return false;
-            }
-            return true;
         }
 
         // ── Lang / Theme ──
@@ -876,6 +977,11 @@
                         el.querySelector('.price').textContent = t.planPrices[plan];
                     }
                 });
+                updateUserUI();
+                // Update settings if open
+                if (document.getElementById('settingsFullOverlay').classList.contains('open')) {
+                    renderSettingsPage(settingsHistory[settingsHistory.length-1] || 'page-main');
+                }
             }
         }
 
@@ -906,6 +1012,9 @@
                 root.style.setProperty('--dark1', '#0F0F0F');
                 root.style.setProperty('--dark2', '#181818');
                 root.style.setProperty('--dark3', '#222');
+            }
+            if (document.getElementById('settingsFullOverlay').classList.contains('open')) {
+                settingsUpdateUI();
             }
         }
 
@@ -1034,7 +1143,14 @@
             const text = inp.value.trim();
             if (!text && !pendingFiles.length) return;
             if (isTyping) return;
-            if (!checkSubscription()) return;
+            if (!checkSubscriptionActive() && currentUser.role !== 'dev') {
+                // Check if tokens available
+                if (currentUser.tokens <= 0) {
+                    toast(translations[currentLang].noTokens);
+                    updateUserUI();
+                    return;
+                }
+            }
             if (!consumeToken()) return;
 
             document.getElementById('centerHint')?.remove();
@@ -1078,6 +1194,7 @@
             }
             isTyping = false;
             document.getElementById('sendBtn').disabled = false;
+            updateUserUI();
         }
 
         function typeMessage(fullText, tk, sk) {
@@ -1238,11 +1355,8 @@
             settingsHistory = ['page-main'];
         }
 
-        // Build settings HTML dynamically
         function renderSettingsPage(pageId) {
             const inner = document.getElementById('settingsInner');
-            // We'll generate the full settings HTML using JS to keep it clean
-            // For brevity, we define a template string.
             const t = translations[currentLang];
             const settingsHTML = `
                 <div class="page active" id="page-main">
@@ -1297,6 +1411,16 @@
                         <div>
                             <div class="section-label">معلومات</div>
                             <div class="card">
+                                <div class="row" onclick="settingsGo('page-privacy')">
+                                    <div class="row-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                                    <div class="row-body"><div class="row-label">${t.privacyTitle || 'سياسة الخصوصية'}</div></div>
+                                    <div class="row-right"><span class="chevron">›</span></div>
+                                </div>
+                                <div class="row" onclick="settingsGo('page-terms')">
+                                    <div class="row-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                                    <div class="row-body"><div class="row-label">${t.termsTitle || 'شروط الاستخدام'}</div></div>
+                                    <div class="row-right"><span class="chevron">›</span></div>
+                                </div>
                                 <div class="row" onclick="settingsGo('page-about')">
                                     <div class="row-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
                                     <div class="row-body"><div class="row-label">حول</div></div>
@@ -1312,7 +1436,31 @@
                         </div>
                     </div>
                 </div>
-                <!-- About page -->
+                <!-- Privacy -->
+                <div class="page" id="page-privacy">
+                    <div class="topbar">
+                        <div class="back-btn" onclick="settingsBack()">‹</div>
+                        <span class="topbar-title">${t.privacyTitle || 'سياسة الخصوصية'}</span>
+                    </div>
+                    <div class="sheet">
+                        <div class="card" style="padding:16px;line-height:1.8;color:var(--text-dim);font-size:14px;">
+                            ${t.privacyContent || 'نحن في WormGPT نلتزم بحماية خصوصية مستخدمينا...'}
+                        </div>
+                    </div>
+                </div>
+                <!-- Terms -->
+                <div class="page" id="page-terms">
+                    <div class="topbar">
+                        <div class="back-btn" onclick="settingsBack()">‹</div>
+                        <span class="topbar-title">${t.termsTitle || 'شروط الاستخدام'}</span>
+                    </div>
+                    <div class="sheet">
+                        <div class="card" style="padding:16px;line-height:1.8;color:var(--text-dim);font-size:14px;">
+                            ${t.termsContent || 'باستخدامك WormGPT فإنك توافق على الالتزام بالقوانين المحلية والدولية...'}
+                        </div>
+                    </div>
+                </div>
+                <!-- About -->
                 <div class="page" id="page-about">
                     <div class="topbar">
                         <div class="back-btn" onclick="settingsBack()">‹</div>
@@ -1336,7 +1484,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Subscription page (full) -->
+                <!-- Subscription page -->
                 <div class="page" id="page-subscribe">
                     <div class="topbar">
                         <div class="back-btn" onclick="settingsBack()">‹</div>
@@ -1383,11 +1531,9 @@
                 </div>
             `;
             inner.innerHTML = settingsHTML;
-            // Show the requested page
             document.querySelectorAll('.settings-inner .page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(pageId);
             if (target) target.classList.add('active');
-            // Update theme/model checkmarks
             settingsUpdateUI();
         }
 
@@ -1462,7 +1608,6 @@
             }
         }
 
-        // ── Open subscription directly from header button ──
         function openSubscription() {
             openSettingsFull();
             setTimeout(() => settingsOpenSubscription(), 200);
@@ -1489,7 +1634,7 @@
                 if (e.key === 'Enter' && document.activeElement.id === 'loginPassword') handleLogin();
                 if (e.key === 'Enter' && document.activeElement.id === 'loginUsername') handleLogin();
             });
-            console.log('🐛 WormGPT v6 Final with full settings and subscription!');
+            console.log('🐛 WormGPT v6 Final with full settings, subscription expiry, token warning, privacy & terms!');
         }
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
