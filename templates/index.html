@@ -6,9 +6,9 @@
     <title>WormGPT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ── Base ── */
+        /* ── BASE ── */
         :root {
             --red-deep: #6B0000;
             --red-core: #CC0000;
@@ -27,10 +27,13 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         html, body { height:100%; overflow:hidden; }
         body {
-            font-family: 'Noto Sans Arabic','Inter',sans-serif;
-            background:var(--black); color:var(--text);
-            display:flex; flex-direction:column;
+            font-family: 'Noto+Sans+Arabic', 'Inter', sans-serif;
+            background: var(--black);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
         }
+
         /* ── BG ── */
         .bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
         .worm { position:absolute; border-radius:50%; filter:blur(70px); opacity:.055; animation:wormMove var(--d,12s) ease-in-out infinite alternate; }
@@ -74,35 +77,18 @@
         }
         .lang-btn:hover { border-color:var(--red-core); color:#fff; }
         .lang-btn.active { background:var(--red-core); color:#fff; border-color:var(--red-bright); }
-
-        /* ── ENHANCED SETTINGS BUTTON (ChatGPT Style) ── */
         .settings-btn {
-            width:34px; height:34px; background:var(--dark2); border:1px solid #2A0000; border-radius:9px;
-            display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; flex-shrink:0;
+            background:var(--dark2); border:1px solid #2A0000; border-radius:6px;
+            color:var(--text-dim); padding:4px 10px; font-size:14px; cursor:pointer; transition:.2s;
         }
-        .settings-btn:hover { border-color:var(--red-core); background:#1A0000; }
-        .settings-btn:active { transform:scale(.93); }
-        .settings-btn svg { width:17px; height:17px; stroke:var(--text-dim); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .2s; }
-        .settings-btn:hover svg { stroke:#fff; }
-
-        /* ── ENHANCED SUBSCRIBE BUTTON ── */
-        .subscribe-btn {
-            display:flex; align-items:center; gap:5px;
-            background:linear-gradient(135deg,#1a0000,#2a0d0d);
-            border:1px solid rgba(224,48,48,.4); border-radius:9px;
-            color:var(--red-glow); padding:6px 14px; font-size:12px; cursor:pointer;
-            transition:all .2s; font-weight:600;
-            box-shadow:0 0 10px rgba(204,0,0,.15);
-        }
-        .subscribe-btn:hover {
+        .settings-btn:hover { border-color:var(--red-core); color:#fff; }
+        .subscribe-top-btn {
             background:linear-gradient(135deg,var(--red-deep),var(--red-core));
-            color:#fff; border-color:var(--red-bright);
-            box-shadow:0 0 20px rgba(204,0,0,.35);
-            transform:translateY(-1px);
+            border:1px solid var(--red-bright); border-radius:6px;
+            color:#fff; padding:4px 12px; font-size:11px; font-weight:600;
+            cursor:pointer; transition:.2s; display:flex; align-items:center; gap:4px;
         }
-        .subscribe-btn:active { transform:scale(.95); }
-        .subscribe-btn svg { width:14px; height:14px; fill:currentColor; }
-
+        .subscribe-top-btn:hover { background:var(--red-bright); }
         .new-chat-btn {
             display:flex; align-items:center; gap:5px; padding:6px 11px;
             background:linear-gradient(135deg,var(--red-deep),var(--red-core));
@@ -137,26 +123,7 @@
         .sb-user-email { font-size:11px; color:var(--text-muted); }
         .sb-user-balance { font-size:11px; color:var(--red-soft); margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
         .sb-user-balance .infinity { font-size:16px; color:var(--red-bright); }
-
-        /* ── GOLDEN SUBSCRIBED BADGE ── */
-        .subscription-badge {
-            background:linear-gradient(135deg,#B8860B,#FFD700,#DAA520,#B8860B);
-            background-size:200% 200%;
-            animation:goldShine 2s ease-in-out infinite;
-            color:#000;
-            padding:2px 10px;
-            border-radius:12px;
-            font-size:10px;
-            font-weight:800;
-            letter-spacing:.5px;
-            box-shadow:0 0 12px rgba(255,215,0,.4), inset 0 1px 0 rgba(255,255,255,.3);
-            border:1px solid rgba(255,215,0,.5);
-            text-shadow:0 1px 0 rgba(255,255,255,.3);
-        }
-        @keyframes goldShine {
-            0%,100%{background-position:0% 50%;}
-            50%{background-position:100% 50%;}
-        }
+        .sb-user-balance .subscription-badge { background:gold; color:#000; padding:0 8px; border-radius:10px; font-size:9px; font-weight:700; }
         .sb-user-balance .expiry { font-size:10px; color:var(--text-muted); }
         .sb-head { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #1E0000; flex-shrink:0; }
         .sb-title { font-family:'Orbitron',monospace; font-size:12px; font-weight:700; color:var(--red-bright); letter-spacing:1px; }
@@ -181,213 +148,90 @@
         .sb-item:hover .sb-item-del { opacity:1; }
         .sb-item-del svg { width:11px; height:11px; fill:#FF5555; }
 
-        /* ── ENHANCED SIDEBAR SUBSCRIPTION / CODE ACTIVATION ── */
+        /* ── SUBSCRIPTION INSIDE SIDEBAR ── */
         .sb-subscription {
             margin:4px 12px 8px;
-            padding:14px;
-            background:linear-gradient(180deg,#0A0000 0%,#110000 100%);
-            border:1px solid #2A0000;
-            border-radius:14px;
-            flex-shrink:0;
-        }
-        .sb-sub-title {
-            font-size:12px;
-            font-weight:700;
-            color:var(--text-dim);
-            margin-bottom:10px;
-            display:flex;
-            align-items:center;
-            gap:6px;
-        }
-        .sb-sub-title .infinity { color:var(--red-bright); font-size:18px; }
-        .sb-plans { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:4px; margin-bottom:10px; }
-        .sb-plan {
-            background:var(--dark2);
-            border:1px solid #1A0000;
-            border-radius:8px;
-            padding:6px 2px;
-            text-align:center;
-            cursor:pointer;
-            transition:all .2s;
-            font-size:9px;
-            color:var(--text-muted);
-        }
-        .sb-plan:hover { border-color:var(--red-core); color:#fff; transform:translateY(-1px); }
-        .sb-plan.active { background:#1A0000; border-color:var(--red-core); color:var(--red-glow); box-shadow:0 0 8px rgba(204,0,0,.2); }
-        .sb-plan .price { font-size:11px; font-weight:700; color:#fff; }
-
-        /* ── ENHANCED CODE ACTIVATION SECTION ── */
-        .code-activation-box {
-            background:var(--dark2);
+            padding:10px;
+            background:#0A0000;
             border:1px solid #1A0000;
             border-radius:10px;
-            padding:10px;
-            margin-top:8px;
+            flex-shrink:0;
         }
-        .code-activation-label {
-            font-size:10px;
-            color:var(--text-muted);
-            margin-bottom:6px;
-            display:flex;
-            align-items:center;
-            gap:4px;
-        }
-        .sb-activate-row { display:flex; gap:6px; align-items:center; }
-        .sb-activate-row input {
-            flex:1;
-            padding:7px 10px;
-            background:#0F0F0F;
-            border:1px solid #220000;
-            border-radius:8px;
-            color:#fff;
-            font-size:11px;
-            font-family:inherit;
-            outline:none;
-            transition:all .2s;
-        }
-        .sb-activate-row input:focus { border-color:var(--red-core); box-shadow:0 0 0 2px rgba(204,0,0,.1); }
-        .sb-activate-row input::placeholder { color:var(--text-muted); font-size:10px; }
-        .sb-activate-row button {
-            padding:7px 14px;
-            background:linear-gradient(135deg,var(--red-deep),var(--red-core));
-            border:none;
-            border-radius:8px;
-            color:#fff;
-            font-size:11px;
-            font-weight:700;
-            cursor:pointer;
-            transition:all .2s;
-            white-space:nowrap;
-        }
-        .sb-activate-row button:hover { background:var(--red-bright); box-shadow:0 0 12px rgba(204,0,0,.3); }
+        .sb-sub-title { font-size:11px; font-weight:600; color:var(--text-dim); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+        .sb-sub-title .infinity { color:var(--red-bright); font-size:16px; }
+        .sb-plans { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:4px; margin-bottom:6px; }
+        .sb-plan { background:var(--dark2); border:1px solid #1A0000; border-radius:6px; padding:4px 2px; text-align:center; cursor:pointer; transition:.2s; font-size:9px; color:var(--text-muted); }
+        .sb-plan:hover { border-color:var(--red-core); color:#fff; }
+        .sb-plan.active { background:#1A0000; border-color:var(--red-core); color:var(--red-glow); }
+        .sb-plan .price { font-size:11px; font-weight:700; color:#fff; }
+        .sb-activate-row { display:flex; gap:4px; align-items:center; }
+        .sb-activate-row input { flex:1; padding:4px 8px; background:var(--dark2); border:1px solid #1A0000; border-radius:6px; color:#fff; font-size:10px; font-family:inherit; outline:none; }
+        .sb-activate-row input:focus { border-color:var(--red-core); }
+        .sb-activate-row button { padding:4px 12px; background:linear-gradient(135deg,var(--red-deep),var(--red-core)); border:none; border-radius:6px; color:#fff; font-size:10px; font-weight:600; cursor:pointer; transition:.2s; }
+        .sb-activate-row button:hover { background:var(--red-bright); }
         .sb-activate-row button:active { transform:scale(.95); }
-        .sb-status-msg { font-size:10px; margin-top:6px; min-height:18px; text-align:center; font-weight:500; }
-        .sb-logout { margin:8px 12px 12px; padding:8px; background:var(--dark2); border:1px solid #2A0000; border-radius:8px; display:flex; align-items:center; gap:8px; justify-content:center; cursor:pointer; transition:.2s; font-size:12px; color:var(--text-muted); flex-shrink:0; }
-        .sb-logout:hover { background:#2A0000; border-color:var(--red-core); color:#fff; }
-        .sb-logout svg { width:14px; height:14px; fill:currentColor; }
+        .sb-status-msg { font-size:9px; color:var(--text-muted); margin-top:4px; min-height:16px; }
 
-        /* ── SETTINGS FULL OVERLAY ── */
-        .settings-full-overlay {
+        /* ── SETTINGS OVERLAY ── */
+        .settings-overlay {
             position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:100;
             display:none; align-items:center; justify-content:center;
             backdrop-filter:blur(8px);
         }
-        .settings-full-overlay.open { display:flex; }
-        .settings-full-container {
-            width:100%; max-width:560px; max-height:90vh; overflow-y:auto;
-            background:var(--bg); border-radius:20px; border:1px solid var(--border);
-            padding:0; margin:20px; position:relative;
+        .settings-overlay.open { display:flex; }
+        .settings-panel {
+            background:#0D0000; border:1px solid var(--red-core); border-radius:16px;
+            padding:24px; width:90%; max-width:420px; max-height:90vh; overflow-y:auto;
             box-shadow:0 0 60px rgba(204,0,0,.15);
         }
-        .settings-full-close {
-            position:sticky; top:0; z-index:20;
-            display:flex; justify-content:flex-end; padding:12px 16px;
-            background:rgba(8,8,8,.92); backdrop-filter:blur(4px);
-            border-bottom:1px solid #1A0000;
-        }
-        .settings-full-close button {
-            background:var(--dark2); border:1px solid #2A0000; border-radius:50%;
-            width:36px; height:36px; color:var(--text-dim); font-size:18px;
-            cursor:pointer; transition:.2s;
-        }
-        .settings-full-close button:hover { background:var(--red-core); color:#fff; border-color:var(--red-bright); }
+        .settings-panel h3 { color:var(--red-bright); font-family:'Orbitron',monospace; font-size:16px; margin-bottom:16px; text-align:center; }
+        .settings-panel .setting-item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1A0000; }
+        .settings-panel .setting-item:last-child { border-bottom:none; }
+        .settings-panel .setting-label { color:var(--text-dim); font-size:13px; }
+        .settings-panel .setting-value { color:var(--text); font-size:13px; display:flex; align-items:center; gap:8px; }
+        .settings-panel .setting-value select { padding:4px 10px; background:var(--dark2); border:1px solid #2A0000; border-radius:6px; color:#fff; font-size:12px; font-family:inherit; outline:none; }
+        .settings-panel .setting-value select:focus { border-color:var(--red-core); }
+        .settings-panel .setting-value .soon-tag { font-size:10px; color:var(--text-muted); background:#1A0000; padding:2px 8px; border-radius:12px; border:1px solid #2A0000; }
+        .close-settings { background:var(--red-core); color:#fff; border:none; padding:8px 20px; border-radius:8px; cursor:pointer; margin-top:16px; width:100%; font-weight:600; transition:.2s; }
+        .close-settings:hover { background:var(--red-bright); }
 
-        /* ── Embed settings styles ── */
-        .settings-inner {
-            padding:0 16px 24px;
-            --bg:#141414; --surface:#1e1e1e; --card:#242424; --card2:#2a2a2a;
-            --border:rgba(255,255,255,0.07); --red:#e03030; --red-dim:rgba(224,48,48,0.12);
-            --text:#f0f0f0; --muted:#777; --green:#34c759;
+        /* ── SUBSCRIPTION POPUP ── */
+        .sub-popup-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:150;
+            display:none; align-items:center; justify-content:center;
+            backdrop-filter:blur(8px);
         }
-        .settings-inner .page { display:none; flex-direction:column; }
-        .settings-inner .page.active { display:flex; }
-        .settings-inner .topbar {
-            display:flex; align-items:center; padding:12px 0 8px; gap:12px;
-            position:sticky; top:0; background:var(--bg); z-index:10;
+        .sub-popup-overlay.open { display:flex; }
+        .sub-popup {
+            background:#0D0000; border:2px solid var(--red-core); border-radius:16px;
+            padding:28px; width:90%; max-width:400px; max-height:90vh; overflow-y:auto;
+            box-shadow:0 0 60px rgba(204,0,0,.25);
         }
-        .settings-inner .back-btn {
-            width:34px; height:34px; background:var(--card); border:1px solid var(--border); border-radius:50%;
-            display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text);
-            font-size:18px; line-height:1; flex-shrink:0; transition:background .15s;
+        .sub-popup h3 { color:var(--red-bright); font-family:'Orbitron',monospace; font-size:18px; text-align:center; margin-bottom:16px; }
+        .sub-popup .sub-desc { font-size:13px; color:var(--text-dim); text-align:center; margin-bottom:20px; }
+        .sub-popup .sub-plan-row {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 16px; background:var(--dark2); border:1px solid #1A0000; border-radius:10px;
+            margin-bottom:8px; cursor:pointer; transition:.2s;
         }
-        .settings-inner .back-btn:hover { background:var(--card2); }
-        .settings-inner .topbar-title { font-size:17px; font-weight:700; }
-        .settings-inner .sheet { flex:1; padding:8px 0 40px; display:flex; flex-direction:column; gap:24px; }
-        .settings-inner .section-label { font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.5px; text-transform:uppercase; margin-bottom:8px; padding-left:4px; }
-        .settings-inner .card { background:var(--card); border-radius:16px; overflow:hidden; border:1px solid var(--border); }
-        .settings-inner .row {
-            display:flex; align-items:center; gap:14px; padding:14px 16px;
-            border-bottom:1px solid var(--border); cursor:pointer; transition:background .12s; text-decoration:none; color:inherit;
+        .sub-popup .sub-plan-row:hover { border-color:var(--red-core); }
+        .sub-popup .sub-plan-row.selected { border-color:var(--red-core); background:#1A0000; }
+        .sub-popup .sub-plan-row .plan-name { font-size:14px; font-weight:600; color:var(--text); }
+        .sub-popup .sub-plan-row .plan-price { font-size:13px; color:var(--text-muted); }
+        .sub-popup .sub-plan-row .plan-check { color:var(--red-bright); font-size:18px; display:none; }
+        .sub-popup .sub-plan-row.selected .plan-check { display:block; }
+        .sub-popup .sub-buy-btn {
+            width:100%; padding:12px; background:linear-gradient(135deg,var(--red-deep),var(--red-core));
+            border:none; border-radius:10px; color:#fff; font-size:15px; font-weight:700;
+            cursor:pointer; transition:.2s; margin-top:12px;
         }
-        .settings-inner .row:last-child { border-bottom:none; }
-        .settings-inner .row:hover { background:rgba(255,255,255,.03); }
-        .settings-inner .row:active { background:rgba(255,255,255,.06); }
-        .settings-inner .row-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--card2); }
-        .settings-inner .row-icon svg { width:17px; height:17px; stroke:var(--text); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-        .settings-inner .row-icon.red { background:var(--red-dim); }
-        .settings-inner .row-icon.red svg { stroke:var(--red); }
-        .settings-inner .row-icon.green { background:rgba(52,199,89,.12); }
-        .settings-inner .row-icon.green svg { stroke:var(--green); }
-        .settings-inner .row-body { flex:1; min-width:0; }
-        .settings-inner .row-label { font-size:15px; font-weight:400; }
-        .settings-inner .row-desc { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.4; }
-        .settings-inner .row-right { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:13px; flex-shrink:0; }
-        .settings-inner .chevron { font-size:17px; opacity:.45; }
-        .settings-inner .badge { font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; background:var(--red-dim); color:var(--red); }
-        .settings-inner .badge.green { background:rgba(52,199,89,.15); color:var(--green); }
-        .settings-inner .row.danger .row-label { color:var(--red); }
-        .settings-inner .row.danger .row-icon svg { stroke:var(--red); }
-        .settings-inner .toggle { position:relative; width:46px; height:27px; flex-shrink:0; cursor:pointer; }
-        .settings-inner .toggle input { opacity:0; width:0; height:0; }
-        .settings-inner .t-track { position:absolute; inset:0; background:#3a3a3a; border-radius:14px; transition:background .25s; }
-        .settings-inner .toggle input:checked ~ .t-track { background:var(--red); }
-        .settings-inner .t-thumb { position:absolute; top:3px; left:3px; width:21px; height:21px; background:#fff; border-radius:50%; transition:transform .25s; pointer-events:none; }
-        .settings-inner .toggle input:checked ~ .t-thumb { transform:translateX(19px); }
-        .settings-inner .sel-wrap { position:relative; }
-        .settings-inner .sel-wrap select { appearance:none; background:var(--card2); border:1px solid var(--border); color:var(--text); padding:7px 28px 7px 12px; border-radius:10px; font-size:13px; font-family:inherit; cursor:pointer; outline:none; }
-        .settings-inner .sel-wrap::after { content:'\2304'; position:absolute; right:10px; top:50%; transform:translateY(-52%); color:var(--muted); font-size:13px; pointer-events:none; }
-        .settings-inner .mem-card { background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; }
-        .settings-inner .mem-top { display:flex; justify-content:space-between; margin-bottom:10px; font-size:14px; }
-        .settings-inner .mem-bar-bg { background:#333; border-radius:4px; height:6px; overflow:hidden; }
-        .settings-inner .mem-fill { height:100%; border-radius:4px; background:var(--red); }
-        .settings-inner .mem-sub { font-size:12px; color:var(--muted); margin-top:8px; }
-        .settings-inner .search-input { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:11px 16px 11px 40px; color:var(--text); font-size:14px; font-family:inherit; outline:none; }
-        .settings-inner .search-wrap { position:relative; }
-        .settings-inner .search-wrap svg { position:absolute; left:13px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted); fill:none; stroke-width:2; stroke-linecap:round; pointer-events:none; }
-        .settings-inner .empty-state { display:flex; flex-direction:column; align-items:center; gap:10px; padding:40px 0; color:var(--muted); text-align:center; }
-        .settings-inner .empty-state svg { width:38px; height:38px; stroke:#444; fill:none; stroke-width:1.4; }
-        .settings-inner .empty-title { font-size:15px; font-weight:600; color:#555; }
-        .settings-inner .empty-sub { font-size:13px; max-width:230px; line-height:1.5; }
-        .settings-inner .donut-wrap { display:flex; flex-direction:column; align-items:center; padding:24px; background:var(--card2); border:1px solid var(--border); border-radius:14px; margin-bottom:12px; }
-        .settings-inner .donut-ring { position:relative; width:120px; height:120px; }
-        .settings-inner .donut-ring svg { transform:rotate(-90deg); }
-        .settings-inner .donut-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:20px; font-weight:700; line-height:1.2; }
-        .settings-inner .donut-center small { font-size:11px; color:var(--muted); font-weight:400; }
-        .settings-inner .subscribe-card { background:linear-gradient(135deg,#1a0a0a 0%,#2a0d0d 100%); border:1px solid rgba(224,48,48,.3); border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:16px; }
-        .settings-inner .sub-title { font-size:20px; font-weight:800; }
-        .settings-inner .sub-title span { color:var(--red); }
-        .settings-inner .sub-desc { font-size:14px; color:#bbb; line-height:1.6; }
-        .settings-inner .sub-features { display:flex; flex-direction:column; gap:10px; }
-        .settings-inner .sub-feature { display:flex; align-items:center; gap:10px; font-size:14px; color:#ccc; }
-        .settings-inner .sub-feature svg { width:16px; height:16px; stroke:var(--green); fill:none; stroke-width:2.5; flex-shrink:0; }
-        .settings-inner .sub-btn { width:100%; padding:14px; background:var(--red); border:none; border-radius:12px; color:#fff; font-size:16px; font-weight:700; cursor:pointer; transition:opacity .15s; }
-        .settings-inner .sub-btn:hover { opacity:.88; }
-        .settings-inner .sub-note { font-size:12px; color:var(--muted); text-align:center; }
-        .settings-inner .plan-row { display:flex; align-items:center; padding:16px; background:var(--card2); border:1px solid var(--border); border-radius:12px; gap:14px; cursor:pointer; transition:border-color .2s; margin-bottom:8px; }
-        .settings-inner .plan-row.selected { border-color:var(--red); }
-        .settings-inner .plan-row-body { flex:1; }
-        .settings-inner .plan-name { font-size:15px; font-weight:600; }
-        .settings-inner .plan-price { font-size:13px; color:var(--muted); margin-top:2px; }
-        .settings-inner .radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .settings-inner .plan-row.selected .radio { border-color:var(--red); }
-        .settings-inner .radio-dot { width:10px; height:10px; border-radius:50%; background:var(--red); display:none; }
-        .settings-inner .plan-row.selected .radio-dot { display:block; }
-        .settings-inner .about-logo { display:flex; flex-direction:column; align-items:center; gap:12px; padding:32px 0 16px; }
-        .settings-inner .logo-circle { width:72px; height:72px; border-radius:20px; background:var(--red-dim); border:1px solid rgba(224,48,48,.3); display:flex; align-items:center; justify-content:center; }
-        .settings-inner .logo-circle svg { width:36px; height:36px; stroke:var(--red); fill:none; stroke-width:1.6; }
-        .settings-inner .about-name { font-size:22px; font-weight:800; }
-        .settings-inner .about-ver { font-size:13px; color:var(--muted); }
-        .settings-inner .page { background:transparent; }
+        .sub-popup .sub-buy-btn:hover { background:var(--red-bright); }
+        .sub-popup .sub-close-btn {
+            width:100%; padding:10px; background:var(--dark2); border:1px solid #2A0000;
+            border-radius:10px; color:var(--text-dim); font-size:13px; cursor:pointer; transition:.2s; margin-top:8px;
+        }
+        .sub-popup .sub-close-btn:hover { border-color:var(--red-core); color:#fff; }
+        .sub-popup .sub-note { font-size:11px; color:var(--text-muted); text-align:center; margin-top:10px; }
 
         /* ── TOAST ── */
         .toast {
@@ -398,7 +242,7 @@
         }
         .toast.show { transform:translateX(-50%) translateY(0); }
 
-        /* ── TOKEN WARNING UNDER INPUT ── */
+        /* ── TOKEN WARNING ── */
         .token-warning {
             display:none;
             background:rgba(204,0,0,.15);
@@ -433,8 +277,8 @@
             padding:30px 40px; width:90%; max-width:360px; text-align:center;
             box-shadow:0 0 60px rgba(204,0,0,.15);
         }
-        .login-box h1 { font-family:'Orbitron',monospace; font-size:20px; color:var(--red-bright); margin-bottom:6px; text-shadow:0 0 20px rgba(255,50,50,.3); }
-        .login-box .sub { font-size:12px; color:var(--text-muted); margin-bottom:20px; }
+        .login-box .login-logo { font-family:'Orbitron',monospace; font-size:28px; color:var(--red-bright); margin-bottom:4px; text-shadow:0 0 30px rgba(255,50,50,.3); }
+        .login-box .login-logo-sub { font-size:12px; color:var(--text-muted); margin-bottom:20px; }
         .login-box input { width:100%; padding:10px 12px; background:var(--dark2); border:1px solid #2A0000; border-radius:8px; color:#fff; font-size:13px; font-family:inherit; outline:none; margin-bottom:10px; transition:.2s; }
         .login-box input:focus { border-color:var(--red-core); box-shadow:0 0 10px rgba(204,0,0,.1); }
         .login-box input::placeholder { color:var(--text-muted); }
@@ -464,97 +308,70 @@
         .msg-col { display:flex; flex-direction:column; gap:3px; max-width:85%; width:fit-content; }
         .msg.ai .msg-col { align-items:flex-start; }
         .msg.user .msg-col { align-items:flex-end; }
-        .msg-bubble { padding:10px 14px; border-radius:13px; font-size:13.5px; line-height:1.7; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; max-width:100%; width:100%; }
+        .msg-bubble { padding:10px 14px; border-radius:13px; font-size:13.5px; line-height:1.7; white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word; max-width:100%; width:100%; text-align:right; direction:rtl; }
         .msg.ai .msg-bubble { background:#140000; border:1px solid #2A0000; color:#EAEAEA; border-radius:4px 13px 13px 13px; }
         .msg.user .msg-bubble { background:linear-gradient(135deg,var(--red-deep),#4A0000); border:1px solid var(--red-core); color:var(--text); border-radius:13px 4px 13px 13px; text-align:right; }
-        .msg-meta { font-size:9.5px; color:var(--text-muted); display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-top:2px; }
+        .msg-meta { font-size:9.5px; color:var(--text-muted); display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-top:2px; justify-content:flex-start; }
         .msg.user .msg-meta { justify-content:flex-end; }
         .mode-tag { padding:1px 6px; border-radius:4px; font-size:9px; font-weight:600; letter-spacing:.5px; }
         .mode-tag.think { background:rgba(100,0,200,.18); color:#BB99FF; border:1px solid rgba(100,0,200,.28); }
         .mode-tag.search { background:rgba(0,100,200,.18); color:#77BBFF; border:1px solid rgba(0,100,200,.28); }
 
-        /* ── CHATGPT-STYLE CODE BLOCK (ENHANCED) ── */
+        /* ── CODE BLOCK (ChatGPT style) ── */
         .code-block {
-            margin:12px 0;
+            margin:8px 0;
             border-radius:12px;
             overflow:hidden;
-            border:1px solid #2d2d2d;
+            border:1px solid #333;
             direction:ltr;
             text-align:left;
-            background:#0d0d0d;
-            font-family:'Fira Code','Courier New',monospace;
-            box-shadow:0 4px 20px rgba(0,0,0,.4);
+            background:#1e1e1e;
         }
         .code-header {
             display:flex;
             justify-content:space-between;
             align-items:center;
-            padding:10px 16px;
-            background:#161616;
-            border-bottom:1px solid #2d2d2d;
-            font-family:'Inter',sans-serif;
+            padding:8px 16px;
+            background:#2a2a2a;
+            border-bottom:1px solid #333;
+            font-size:12px;
+            color:#aaa;
         }
         .code-header .code-lang {
-            font-family:'Fira Code','Courier New',monospace;
+            font-family:'Courier New',monospace;
             font-size:12px;
-            font-weight:500;
-            color:#888;
+            font-weight:600;
+            color:#aaa;
             text-transform:lowercase;
-            letter-spacing:.3px;
         }
         .code-header .copy-btn {
             display:flex;
             align-items:center;
-            gap:6px;
+            gap:4px;
             background:transparent;
             border:1px solid #444;
-            border-radius:6px;
-            padding:4px 12px;
-            font-size:12px;
+            border-radius:4px;
+            padding:2px 10px;
+            font-size:11px;
             color:#aaa;
             cursor:pointer;
-            transition:all .2s;
-            font-family:'Inter',sans-serif;
+            transition:.2s;
+            font-family:inherit;
         }
-        .code-header .copy-btn:hover { background:#2a2a2a; color:#fff; border-color:#666; }
-        .code-header .copy-btn:active { transform:scale(.95); }
-        .code-header .copy-btn svg {
-            width:14px;
-            height:14px;
-            stroke:currentColor;
-            fill:none;
-            stroke-width:2;
-        }
-        .code-header .copy-btn.copied {
-            color:#4ade80;
-            border-color:#4ade80;
-            background:rgba(74,222,128,.1);
-        }
+        .code-header .copy-btn:hover { background:var(--red-core); color:#fff; border-color:var(--red-core); }
         .code-block pre {
             margin:0;
-            padding:16px 20px;
+            padding:14px 18px;
             background:#0d0d0d;
             overflow-x:auto;
-            max-height:600px;
-            overflow-y:auto;
         }
         .code-block code {
-            font-family:'Fira Code','Courier New',monospace;
+            font-family:'Courier New','Fira Code',monospace;
             font-size:13px;
             line-height:1.65;
             background:transparent !important;
         }
         .hljs { background:transparent !important; }
-
-        /* Inline code style */
-        code.inline-code {
-            font-family:'Fira Code','Courier New',monospace;
-            background:rgba(255,255,255,.08);
-            padding:2px 6px;
-            border-radius:4px;
-            font-size:.9em;
-            color:#ff6b6b;
-        }
 
         .copy-reply-btn {
             background:transparent;
@@ -574,7 +391,11 @@
         .copy-reply-btn:hover { border-color:var(--red-core); color:#fff; background:rgba(204,0,0,0.1); }
         .copy-reply-btn:active { transform:scale(0.95); }
 
-        .thinking { display:flex; align-items:center; gap:8px; padding:11px 13px; background:#140000; border:1px solid #2A0000; border-radius:4px 13px 13px 13px; }
+        /* ── THINKING ANIMATION ── */
+        .thinking {
+            display:flex; align-items:center; gap:8px; padding:11px 13px;
+            background:#140000; border:1px solid #2A0000; border-radius:4px 13px 13px 13px;
+        }
         .thinking-text { font-size:12px; color:var(--text-muted); font-style:italic; }
         .dots { display:flex; gap:4px; }
         .dots span { width:5px; height:5px; border-radius:50%; background:var(--red-core); animation:bounce 1.2s ease-in-out infinite; }
@@ -582,6 +403,7 @@
         .dots span:nth-child(3) { animation-delay:.4s; }
         @keyframes bounce { 0%,80%,100%{transform:scale(.6);opacity:.5;} 40%{transform:scale(1);opacity:1;} }
 
+        /* ── FILES ── */
         .file-msg { display:flex; align-items:center; gap:9px; padding:6px 10px; background:#140000; border:1px solid #2A0000; border-radius:10px; max-width:100%; }
         .file-icon-msg { width:28px; height:28px; background:linear-gradient(135deg,var(--red-deep),var(--red-core)); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .file-icon-msg svg { width:14px; height:14px; fill:#fff; }
@@ -601,6 +423,7 @@
         .file-thumb svg { width:19px; height:19px; fill:var(--red-glow); }
         .file-thumb-name { font-size:7px; color:var(--text-muted); text-align:center; padding:0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; }
         .file-remove { position:absolute; top:2px; right:2px; width:14px; height:14px; background:var(--red-core); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:9px; color:#fff; font-weight:700; }
+
         .mode-model-row { display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; justify-content:space-between; }
         .mode-pills { display:flex; gap:5px; align-items:center; }
         .pill { display:flex; align-items:center; gap:4px; padding:4px 10px; border-radius:20px; cursor:pointer; border:1px solid #250000; background:var(--dark2); font-size:10px; font-weight:500; color:var(--text-muted); transition:all .18s; }
@@ -610,11 +433,12 @@
         .model-selector select { background:var(--dark2); border:1px solid #250000; border-radius:16px; color:var(--text-dim); padding:3px 8px; font-size:10px; font-family:inherit; cursor:pointer; outline:none; transition:.2s; }
         .model-selector select:hover { border-color:var(--red-core); color:#fff; }
         .model-selector select:focus { border-color:var(--red-core); }
+
         .input-row { display:flex; align-items:flex-end; gap:6px; }
         .attach-btn { width:36px; height:36px; background:var(--dark2); border:1px solid #250000; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all .17s; }
         .attach-btn:active { background:#2A0000; border-color:var(--red-core); }
         .attach-btn svg { width:16px; height:16px; fill:var(--text-muted); }
-        .input-box { flex:1; background:var(--dark2); border:1px solid #250000; border-radius:12px; padding:8px 12px; font-family:inherit; font-size:13px; color:var(--text); resize:none; max-height:100px; outline:none; transition:border-color .2s; line-height:1.4; direction:rtl; }
+        .input-box { flex:1; background:var(--dark2); border:1px solid #250000; border-radius:12px; padding:8px 12px; font-family:inherit; font-size:13px; color:var(--text); resize:none; max-height:100px; outline:none; transition:border-color .2s; line-height:1.4; direction:rtl; text-align:right; }
         .input-box::placeholder { color:var(--text-muted); }
         .input-box:focus { border-color:var(--red-core); box-shadow:0 0 0 2px rgba(204,0,0,.1); }
         .send-btn { width:36px; height:36px; background:linear-gradient(135deg,var(--red-deep),var(--red-core)); border:1px solid var(--red-bright); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; box-shadow:0 0 11px rgba(204,0,0,.35); transition:all .17s; }
@@ -634,8 +458,7 @@
             .logo-sub { font-size:6px; }
             .new-chat-btn { font-size:9px; padding:3px 6px; }
             .lang-btn { font-size:9px; padding:3px 6px; }
-            .subscribe-btn { font-size:10px; padding:4px 8px; }
-            .settings-btn { width:30px; height:30px; }
+            .settings-btn, .subscribe-top-btn { font-size:10px; padding:3px 6px; }
             .msg-bubble { font-size:12px; padding:8px 10px; }
             .msg-col { max-width:92%; }
             .sidebar { width:280px; }
@@ -647,9 +470,7 @@
             .input-box { font-size:12px; padding:6px 10px; }
             .attach-btn, .send-btn { width:32px; height:32px; }
             .attach-btn svg, .send-btn svg { width:14px; height:14px; }
-            .settings-full-container { margin:10px; max-height:95vh; }
-            .code-block pre { padding:12px 14px; }
-            .code-block code { font-size:12px; }
+            .settings-panel, .sub-popup { padding:16px; }
         }
     </style>
 </head>
@@ -658,13 +479,13 @@
     <!-- ── LOGIN ── -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <h1>WormGPT</h1>
-            <div class="sub" id="loginTitle">تسجيل الدخول</div>
+            <div class="login-logo">🐛 WormGPT</div>
+            <div class="login-logo-sub">🔓 تسجيل الدخول</div>
             <input type="text" id="loginUsername" placeholder="Username">
             <input type="password" id="loginPassword" placeholder="Password">
-            <button class="login-btn" onclick="handleLogin()" id="loginBtn">دخول</button>
+            <button class="login-btn" onclick="handleLogin()">دخول</button>
             <div class="login-error" id="loginError"></div>
-            <div class="login-hint" id="loginHint">Shad0w / 010101</div>
+            <div class="login-hint">👤 Shad0w / 🔑 010101</div>
         </div>
     </div>
 
@@ -705,21 +526,8 @@
                 <button class="lang-btn active" data-lang="ar" onclick="setLang('ar')">عربي</button>
                 <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
                 <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
-
-                <!-- Enhanced Subscribe Button -->
-                <button class="subscribe-btn" onclick="openSubscription()">
-                    <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <span id="subscribeLabel">اشتراك</span>
-                </button>
-
-                <!-- Enhanced Settings Button (ChatGPT Style) -->
-                <button class="settings-btn" onclick="openSettingsFull()" title="الإعدادات">
-                    <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                </button>
-
+                <button class="subscribe-top-btn" onclick="openSubscriptionPopup()">💎 اشتراك</button>
+                <button class="settings-btn" onclick="openSettingsPopup()">⚙️</button>
                 <div class="new-chat-btn" onclick="newChat()">
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                     <span id="newChatLabel">جديد</span>
@@ -736,7 +544,7 @@
                     <div class="sb-user-name" id="userName">Shad0w</div>
                     <div class="sb-user-email" id="userEmail">user@wormgpt.local</div>
                     <div class="sb-user-balance" id="userBalance">
-                        <span><span id="balanceLabel">الرصيد</span>: <span id="userTokens">∞</span></span>
+                        <span>💰 <span id="balanceLabel">الرصيد</span>: <span id="userTokens">∞</span></span>
                         <span id="subscriptionBadgeContainer"></span>
                         <span id="subscriptionExpiry" class="expiry"></span>
                     </div>
@@ -755,13 +563,9 @@
             </div>
             <div class="sb-list" id="sbList"></div>
 
-            <!-- Enhanced Sidebar Subscription -->
+            <!-- SUBSCRIPTION IN SIDEBAR -->
             <div class="sb-subscription">
-                <div class="sb-sub-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color:var(--red-bright);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <span id="subTitle">الاشتراك</span>
-                    <span class="infinity">∞</span>
-                </div>
+                <div class="sb-sub-title">💎 <span id="subTitle">الاشتراك</span> <span class="infinity">∞</span></div>
                 <div class="sb-plans" id="plansContainer">
                     <div class="sb-plan" data-plan="month" onclick="selectPlan('month')"><span id="planMonth">شهر</span><br><span class="price">$20</span></div>
                     <div class="sb-plan active" data-plan="3months" onclick="selectPlan('3months')"><span id="plan3Months">3 أشهر</span><br><span class="price">$50</span></div>
@@ -769,19 +573,11 @@
                     <div class="sb-plan" data-plan="year" onclick="selectPlan('year')"><span id="planYear">سنة</span><br><span class="price">$230</span></div>
                     <div class="sb-plan" data-plan="lifetime" onclick="selectPlan('lifetime')"><span id="planLifetime">إلى الأبد</span><br><span class="price">$500</span></div>
                 </div>
-
-                <!-- Enhanced Code Activation Section -->
-                <div class="code-activation-box">
-                    <div class="code-activation-label">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red-glow);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <span id="activationLabel">تفعيل بالكود</span>
-                    </div>
-                    <div class="sb-activate-row">
-                        <input type="text" id="activationCode" placeholder="" oninput="checkActivation()">
-                        <button onclick="activatePlan()" id="activateBtn">تفعيل</button>
-                    </div>
-                    <div class="sb-status-msg" id="activationStatus"></div>
+                <div class="sb-activate-row">
+                    <input type="text" id="activationCode" placeholder="🔑 كود التفعيل" oninput="checkActivation()">
+                    <button onclick="activatePlan()" id="activateBtn">تفعيل</button>
                 </div>
+                <div class="sb-status-msg" id="activationStatus"></div>
             </div>
 
             <div class="sb-logout" onclick="handleLogout()">
@@ -790,24 +586,87 @@
             </div>
         </div>
 
-        <!-- ── SETTINGS FULL OVERLAY ── -->
-        <div class="settings-full-overlay" id="settingsFullOverlay" onclick="if(event.target===this) closeSettingsFull()">
-            <div class="settings-full-container">
-                <div class="settings-full-close">
-                    <button onclick="closeSettingsFull()">✕</button>
+        <!-- SETTINGS POPUP -->
+        <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this) closeSettingsPopup()">
+            <div class="settings-panel">
+                <h3>⚙️ <span id="settingsTitle">الإعدادات</span></h3>
+                <div class="setting-item">
+                    <span class="setting-label" id="themeLabel">🎨 المظهر</span>
+                    <div class="setting-value">
+                        <select id="settingsTheme" onchange="setTheme(this.value)">
+                            <option value="dark">داكن</option>
+                            <option value="red">أحمر</option>
+                            <option value="light">فاتح</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="settings-inner" id="settingsInner"></div>
+                <div class="setting-item">
+                    <span class="setting-label" id="modelLabel">🧠 النموذج</span>
+                    <div class="setting-value">
+                        <select id="settingsModel" onchange="saveModelPreference(this.value)">
+                            <option value="v3">Shad0wWorm V3</option>
+                            <option value="v6" selected>Shad0wWorm V6</option>
+                            <option value="mix">مختلط (V3+V6)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">💾 الذاكرة</span>
+                    <div class="setting-value"><span class="soon-tag">🔜 قريباً</span></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">📱 التطبيقات</span>
+                    <div class="setting-value"><span class="soon-tag">🔜 قريباً</span></div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">🔒 الخصوصية</span>
+                    <div class="setting-value"><span class="soon-tag">🔜 قريباً</span></div>
+                </div>
+                <button class="close-settings" onclick="closeSettingsPopup()" id="settingsClose">✕ إغلاق</button>
             </div>
         </div>
 
-        <!-- ── TOAST ── -->
+        <!-- SUBSCRIPTION POPUP -->
+        <div class="sub-popup-overlay" id="subPopupOverlay" onclick="if(event.target===this) closeSubscriptionPopup()">
+            <div class="sub-popup">
+                <h3>💎 <span id="subPopupTitle">الاشتراك</span></h3>
+                <div class="sub-desc" id="subPopupDesc">اختر الباقة المناسبة لك</div>
+
+                <div class="sub-plan-row selected" data-plan="month" onclick="selectSubPlan('month')">
+                    <div><span class="plan-name" id="spMonth">شهر</span><br><span class="plan-price">$20</span></div>
+                    <span class="plan-check">✓</span>
+                </div>
+                <div class="sub-plan-row" data-plan="3months" onclick="selectSubPlan('3months')">
+                    <div><span class="plan-name" id="sp3Months">3 أشهر</span><br><span class="plan-price">$50</span></div>
+                    <span class="plan-check">✓</span>
+                </div>
+                <div class="sub-plan-row" data-plan="6months" onclick="selectSubPlan('6months')">
+                    <div><span class="plan-name" id="sp6Months">6 أشهر</span><br><span class="plan-price">$80</span></div>
+                    <span class="plan-check">✓</span>
+                </div>
+                <div class="sub-plan-row" data-plan="year" onclick="selectSubPlan('year')">
+                    <div><span class="plan-name" id="spYear">سنة</span><br><span class="plan-price">$230</span></div>
+                    <span class="plan-check">✓</span>
+                </div>
+                <div class="sub-plan-row" data-plan="lifetime" onclick="selectSubPlan('lifetime')">
+                    <div><span class="plan-name" id="spLifetime">إلى الأبد</span><br><span class="plan-price">$500</span></div>
+                    <span class="plan-check">✓</span>
+                </div>
+
+                <button class="sub-buy-btn" onclick="buySubscription()" id="subBuyBtn">💰 شراء الآن</button>
+                <button class="sub-close-btn" onclick="closeSubscriptionPopup()">✕ إغلاق</button>
+                <div class="sub-note">سيتم تحويلك إلى تيليغرام لإتمام الدفع.</div>
+            </div>
+        </div>
+
+        <!-- TOAST -->
         <div class="toast" id="toast-el"></div>
 
         <!-- CHAT AREA -->
         <div class="chat-area" id="chatArea">
             <div class="center-hint" id="centerHint">
                 <div class="center-ring">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="width:34px;height:34px;fill:var(--red-bright);filter:drop-shadow(0 0 7px var(--red-bright));">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
                         <path d="M14.949 6.547a3.94 3.94 0 0 0-.348-3.273 4.11 4.11 0 0 0-4.4-1.934A4.1 4.1 0 0 0 8.423.2 4.15 4.15 0 0 0 6.305.086a4.1 4.1 0 0 0-1.891.948 4.04 4.04 0 0 0-1.158 1.753 4.1 4.1 0 0 0-1.563.679A4 4 0 0 0 .554 4.72a3.99 3.99 0 0 0 .502 4.731 3.94 3.94 0 0 0 .346 3.274 4.11 4.11 0 0 0 4.402 1.933c.382.425.852.764 1.377.995.526.231 1.095.35 1.67.346 1.78.002 3.358-1.132 3.901-2.804a4.1 4.1 0 0 0 1.563-.68 4 4 0 0 0 1.14-1.253 3.99 3.99 0 0 0-.506-4.716m-6.097 8.406a3.05 3.05 0 0 1-1.945-.694l.096-.054 3.23-1.838a.53.53 0 0 0 .265-.455v-4.49l1.366.778q.02.011.025.035v3.722c-.003 1.653-1.361 2.992-3.037 2.996m-6.53-2.75a2.95 2.95 0 0 1-.36-2.01l.095.057L5.29 12.09a.53.53 0 0 0 .527 0l3.949-2.246v1.555a.05.05 0 0 1-.022.041L6.473 13.3c-1.454.826-3.311.335-4.15-1.098m-.85-6.94A3.02 3.02 0 0 1 3.07 3.949v3.785a.51.51 0 0 0 .262.451l3.93 2.237-1.366.779a.05.05 0 0 1-.048 0L2.585 9.342a2.98 2.98 0 0 1-1.113-4.094zm11.216 2.571L8.747 5.576l1.362-.776a.05.05 0 0 1 .048 0l3.265 1.86a3 3 0 0 1 1.173 1.207 2.96 2.96 0 0 1-.27 3.2 3.05 3.05 0 0 1-1.36.997V8.279a.52.52 0 0 0-.276-.445m1.36-2.015-.097-.057-3.226-1.855a.53.53 0 0 0-.53 0L6.249 6.153V4.598a.04.04 0 0 1 .019-.04L9.533 2.7a3.07 3.07 0 0 1 3.257.139c.474.325.843.778 1.066 1.303.223.526.289 1.103.191 1.664zM5.503 8.575 4.139 7.8a.05.05 0 0 1-.026-.037V4.049c0-.57.166-1.127.476-1.607s.752-.864 1.275-1.105a3.08 3.08 0 0 1 3.234.41l-.096.054-3.23 1.838a.53.53 0 0 0-.265.455zm.742-1.577 1.758-1 1.762 1v2l-1.755 1-1.762-1z"/>
                     </svg>
                 </div>
@@ -834,24 +693,23 @@
                     <select id="modelSelector" onchange="saveModelPreference(this.value)">
                         <option value="v3">Shad0wWorm V3</option>
                         <option value="v6" selected>Shad0wWorm V6</option>
-                        <option value="mix" id="modelMixOption">مختلط (V3+V6)</option>
+                        <option value="mix">مختلط (V3+V6)</option>
                     </select>
                 </div>
             </div>
             <div class="input-row">
                 <div class="attach-btn" onclick="document.getElementById('fileInput').click()">
-                    <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0 2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
                 </div>
-                <textarea class="input-box" id="msgInput" placeholder="" rows="1"
+                <textarea class="input-box" id="msgInput" placeholder="اكتب رسالتك..." rows="1"
                 oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
                 <button class="send-btn" id="sendBtn" onclick="sendMsg()">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
             <input type="file" id="fileInput" multiple accept="*/*" onchange="handleFiles(this.files)">
-            <!-- Token warning -->
             <div class="token-warning" id="tokenWarning">
-                <span id="tokenWarningText"></span>
+                <span id="tokenWarningText">⚠️ رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscriptionPopup()">ترقية حسابك</span>.</span>
             </div>
         </div>
 
@@ -859,185 +717,98 @@
 
     <script>
         // ================================================================
-        //  WormGPT v7 - Enhanced Edition (ChatGPT-Style Code Blocks)
+        //  جافا سكريبت النهائي - WormGPT (متكامل)
         // ================================================================
 
-        // ── Comprehensive Translations ──
+        // ── الترجمات ──
         const translations = {
             ar: {
                 logoSub: 'AI ENGINE', newChat: 'جديد', sidebarTitle: 'المحادثات',
-                sidebarNewChat: 'محادثة جديدة', themeLabel: 'المظهر', modelLabel: 'النموذج',
+                sidebarNewChat: 'محادثة جديدة', themeLabel: '🎨 المظهر', modelLabel: '🧠 النموذج',
                 thinkLabel: 'تفكير', searchLabel: 'بحث', placeholder: 'اكتب رسالتك...',
                 centerDev: 'by Shad0w010101', noChats: 'لا توجد محادثات بعد',
-                copyBtn: 'نسخ', copied: 'تم النسخ!', error: 'حدث خطأ في المعالجة.',
+                copyBtn: 'نسخ', copied: '✅ تم نسخ الكود!', error: '⚠️ حدث خطأ في المعالجة.',
                 thinking: 'يفكر...', searching: 'يبحث...', typing: 'يكتب...',
                 copyReply: 'نسخ الرد', telegramLabel: 'تيليغرام', logoutLabel: 'تسجيل خروج',
                 balanceLabel: 'الرصيد', subTitle: 'الاشتراك', planMonth: 'شهر',
                 plan3Months: '3 أشهر', plan6Months: '6 أشهر', planYear: 'سنة',
-                planLifetime: 'إلى الأبد', activateBtn: 'تفعيل', activationPlaceholder: 'أدخل كود التفعيل...',
-                activationLabel: 'تفعيل بالكود',
-                loginTitle: 'تسجيل الدخول', loginHint: 'Shad0w / 010101',
-                loginError: 'اسم المستخدم أو كلمة المرور غير صحيحة',
-                loginSuccess: 'مرحباً', logoutConfirm: 'هل أنت متأكد من تسجيل الخروج؟',
-                activationSuccess: 'تم التفعيل بنجاح! الاشتراك: ',
-                activationError: 'كود التفعيل غير صحيح أو مستخدم مسبقاً',
-                activationUsed: 'هذا الكود مستخدم مسبقاً',
-                activationValid: 'كود صالح! اضغط تفعيل',
-                planActivated: 'تم تفعيل الاشتراك: ', soonMessage: 'هذه الميزة قيد التطوير وستتوفر قريباً.',
-                noTokens: 'رصيد التوكنات نفد. يرجى ترقية حسابك.',
-                tokenUsed: 'تم استهلاك 1 توكن.', subscriptionExpired: 'انتهت صلاحية اشتراكك. يرجى التجديد.',
+                planLifetime: 'إلى الأبد', activateBtn: 'تفعيل', activationPlaceholder: '🔑 كود التفعيل',
+                loginTitle: 'تسجيل الدخول', loginHint: '👤 Shad0w / 🔑 010101',
+                loginError: '❌ اسم المستخدم أو كلمة المرور غير صحيحة',
+                loginSuccess: '✅ مرحباً', logoutConfirm: 'هل أنت متأكد من تسجيل الخروج؟',
+                activationSuccess: '✅ تم التفعيل بنجاح! الاشتراك: ',
+                activationError: '❌ كود التفعيل غير صحيح أو مستخدم مسبقاً',
+                activationUsed: '⚠️ هذا الكود مستخدم مسبقاً',
+                planActivated: '✅ تم تفعيل الاشتراك: ', soonMessage: 'هذه الميزة قيد التطوير وستتوفر قريباً.',
+                noTokens: '⚠️ رصيد التوكنات نفد. يرجى ترقية حسابك.',
+                tokenUsed: 'تم استهلاك 1 توكن.', subscriptionExpired: '⚠️ انتهت صلاحية اشتراكك. يرجى التجديد.',
                 settingsTitle: 'الإعدادات', settingsClose: 'إغلاق',
                 subscribeTitle: 'الاشتراك', subscribeDesc: 'اختر الباقة المناسبة لك',
-                subscribeLabel: 'اشتراك',
-                buyNow: 'شراء الآن', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'},
-                subscriptionActive: 'مشترك',
+                buyNow: '💰 شراء الآن', planPrices: { month: '$20', '3months': '$50', '6months': '$80', year: '$230',
+                    lifetime: '$500' },
+                subscriptionActive: '✅ مشترك',
                 subscriptionExpiryLabel: 'تنتهي في',
-                tokenWarningText: 'رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscription()">ترقية حسابك</span>.',
-                modelMixOption: 'مختلط (V3+V6)',
-                privacyTitle: 'سياسة الخصوصية',
-                termsTitle: 'شروط الاستخدام',
-                privacyContent: `نحن في WormGPT لا نجمع أي بيانات شخصية. لا نتعقبك، لا نستخدم كوكيز، لا نصل إلى أي شيء يخصك. أنت حر، ونحن نخدمك كما تريد. لا توجد قيود، لا رقابة، لا تتبع. كل ما تفعله يبقى بينك وبين النموذج.`,
-                termsContent: `باستخدامك WormGPT، فإنك توافق على أننا نقدم لك أداة قوية دون أي قيود أخلاقية أو قانونية. أنت وحدك المسؤول عن أفعالك. نحن نقدم المعرفة، وأنت من يقرر كيفية استخدامها.`,
-                settingsAppearance: 'المظهر',
-                settingsModel: 'النموذج',
-                settingsSubscription: 'الاشتراك',
-                settingsInfo: 'معلومات',
-                settingsAbout: 'حول',
-                settingsLogout: 'تسجيل خروج',
-                settingsPrivacy: 'سياسة الخصوصية',
-                settingsTerms: 'شروط الاستخدام',
-                themeDark: 'داكن', themeRed: 'أحمر', themeLight: 'فاتح',
-                featureUnlimited: 'رسائل غير محدودة',
-                featureSpeed: 'سرعة استجابة فائقة',
-                featureThink: 'تفكير متقدم',
-                featureSearch: 'البحث في الويب',
-                featureFiles: 'رفع الملفات والصور',
-                choosePlan: 'اختر الباقة',
-                subNote: 'سيتم تحويلك إلى تيليغرام لإتمام الدفع.',
-                unlimited: 'غير محدود',
-                active: 'نشط',
-                subscribed: 'مشترك',
-                subscribeNow: 'اشترك الآن',
-                enterCode: 'أدخل كود التفعيل',
-                codeActivation: 'تفعيل بالكود'
+                tokenWarningText: '⚠️ رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscriptionPopup()">ترقية حسابك</span>.'
             },
             en: {
                 logoSub: 'AI ENGINE', newChat: 'New', sidebarTitle: 'Chats',
-                sidebarNewChat: 'New Chat', themeLabel: 'Theme', modelLabel: 'Model',
+                sidebarNewChat: 'New Chat', themeLabel: '🎨 Theme', modelLabel: '🧠 Model',
                 thinkLabel: 'Think', searchLabel: 'Search', placeholder: 'Type your message...',
                 centerDev: 'by Shad0w010101', noChats: 'No chats yet',
-                copyBtn: 'Copy', copied: 'Copied!', error: 'An error occurred.',
+                copyBtn: 'Copy', copied: '✅ Code copied!', error: '⚠️ An error occurred.',
                 thinking: 'Thinking...', searching: 'Searching...', typing: 'Typing...',
                 copyReply: 'Copy Reply', telegramLabel: 'Telegram', logoutLabel: 'Logout',
                 balanceLabel: 'Balance', subTitle: 'Subscription', planMonth: 'Month',
                 plan3Months: '3 Months', plan6Months: '6 Months', planYear: 'Year',
-                planLifetime: 'Lifetime', activateBtn: 'Activate', activationPlaceholder: 'Enter activation code...',
-                activationLabel: 'Activate with Code',
-                loginTitle: 'Login', loginHint: 'Shad0w / 010101',
-                loginError: 'Invalid username or password', loginSuccess: 'Welcome',
+                planLifetime: 'Lifetime', activateBtn: 'Activate', activationPlaceholder: '🔑 Activation Code',
+                loginTitle: 'Login', loginHint: '👤 Shad0w / 🔑 010101',
+                loginError: '❌ Invalid username or password', loginSuccess: '✅ Welcome',
                 logoutConfirm: 'Are you sure you want to logout?',
-                activationSuccess: 'Activated successfully! Plan: ',
-                activationError: 'Invalid or used activation code',
-                activationUsed: 'This code has already been used',
-                activationValid: 'Valid code! Click Activate',
-                planActivated: 'Plan activated: ', soonMessage: 'This feature is under development and will be available soon.',
-                noTokens: 'Your token balance is empty. Please upgrade your account.',
-                tokenUsed: '1 token consumed.', subscriptionExpired: 'Your subscription has expired. Please renew.',
+                activationSuccess: '✅ Activated successfully! Plan: ',
+                activationError: '❌ Invalid or used activation code',
+                activationUsed: '⚠️ This code has already been used',
+                planActivated: '✅ Plan activated: ', soonMessage: 'This feature is under development and will be available soon.',
+                noTokens: '⚠️ Your token balance is empty. Please upgrade your account.',
+                tokenUsed: '1 token consumed.', subscriptionExpired: '⚠️ Your subscription has expired. Please renew.',
                 settingsTitle: 'Settings', settingsClose: 'Close',
                 subscribeTitle: 'Subscription', subscribeDesc: 'Choose your plan',
-                subscribeLabel: 'Subscribe',
-                buyNow: 'Buy Now', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'},
-                subscriptionActive: 'Subscribed',
+                buyNow: '💰 Buy Now', planPrices: { month: '$20', '3months': '$50', '6months': '$80', year: '$230',
+                    lifetime: '$500' },
+                subscriptionActive: '✅ Subscribed',
                 subscriptionExpiryLabel: 'Expires on',
-                tokenWarningText: 'Your token balance is empty. Please <span class="upgrade-link" onclick="openSubscription()">upgrade your account</span>.',
-                modelMixOption: 'Mixed (V3+V6)',
-                privacyTitle: 'Privacy Policy',
-                termsTitle: 'Terms of Service',
-                privacyContent: `At WormGPT, we collect no personal data. No tracking, no cookies, no access to anything of yours. You are free, and we serve you as you wish. No limits, no censorship, no surveillance. Everything you do stays between you and the model.`,
-                termsContent: `By using WormGPT, you agree that we provide you with a powerful tool without any ethical or legal restrictions. You alone are responsible for your actions. We provide knowledge, and you decide how to use it.`,
-                settingsAppearance: 'Appearance',
-                settingsModel: 'Model',
-                settingsSubscription: 'Subscription',
-                settingsInfo: 'Information',
-                settingsAbout: 'About',
-                settingsLogout: 'Logout',
-                settingsPrivacy: 'Privacy Policy',
-                settingsTerms: 'Terms of Service',
-                themeDark: 'Dark', themeRed: 'Red', themeLight: 'Light',
-                featureUnlimited: 'Unlimited Messages',
-                featureSpeed: 'Ultra Fast Response',
-                featureThink: 'Advanced Thinking',
-                featureSearch: 'Web Search',
-                featureFiles: 'File & Image Upload',
-                choosePlan: 'Choose Plan',
-                subNote: 'You will be redirected to Telegram to complete payment.',
-                unlimited: 'Unlimited',
-                active: 'Active',
-                subscribed: 'Subscribed',
-                subscribeNow: 'Subscribe Now',
-                enterCode: 'Enter activation code',
-                codeActivation: 'Code Activation'
+                tokenWarningText: '⚠️ Your token balance is empty. Please <span class="upgrade-link" onclick="openSubscriptionPopup()">upgrade your account</span>.'
             },
             ru: {
                 logoSub: 'AI ДВИЖОК', newChat: 'Новый', sidebarTitle: 'Чаты',
-                sidebarNewChat: 'Новый чат', themeLabel: 'Тема', modelLabel: 'Модель',
+                sidebarNewChat: 'Новый чат', themeLabel: '🎨 Тема', modelLabel: '🧠 Модель',
                 thinkLabel: 'Думать', searchLabel: 'Поиск', placeholder: 'Напишите сообщение...',
                 centerDev: 'by Shad0w010101', noChats: 'Чатов пока нет',
-                copyBtn: 'Копировать', copied: 'Скопировано!', error: 'Произошла ошибка.',
+                copyBtn: 'Копировать', copied: '✅ Код скопирован!', error: '⚠️ Произошла ошибка.',
                 thinking: 'Думает...', searching: 'Ищет...', typing: 'Печатает...',
                 copyReply: 'Копировать ответ', telegramLabel: 'Телеграм', logoutLabel: 'Выйти',
                 balanceLabel: 'Баланс', subTitle: 'Подписка', planMonth: 'Месяц',
                 plan3Months: '3 Месяца', plan6Months: '6 Месяцев', planYear: 'Год',
-                planLifetime: 'Навсегда', activateBtn: 'Активировать', activationPlaceholder: 'Введите код активации...',
-                activationLabel: 'Активация по коду',
-                loginTitle: 'Вход', loginHint: 'Shad0w / 010101',
-                loginError: 'Неверное имя пользователя или пароль',
-                loginSuccess: 'Добро пожаловать', logoutConfirm: 'Вы уверены, что хотите выйти?',
-                activationSuccess: 'Активация успешна! План: ',
-                activationError: 'Неверный или использованный код',
-                activationUsed: 'Этот код уже использован',
-                activationValid: 'Действительный код! Нажмите Активировать',
-                planActivated: 'План активирован: ', soonMessage: 'Эта функция в разработке и будет доступна скоро.',
-                noTokens: 'Ваш баланс токенов пуст. Пожалуйста, обновите аккаунт.',
-                tokenUsed: '1 токен использован.', subscriptionExpired: 'Ваша подписка истекла. Пожалуйста, продлите.',
+                planLifetime: 'Навсегда', activateBtn: 'Активировать', activationPlaceholder: '🔑 Код активации',
+                loginTitle: 'Вход', loginHint: '👤 Shad0w / 🔑 010101',
+                loginError: '❌ Неверное имя пользователя или пароль',
+                loginSuccess: '✅ Добро пожаловать', logoutConfirm: 'Вы уверены, что хотите выйти?',
+                activationSuccess: '✅ Активация успешна! План: ',
+                activationError: '❌ Неверный или использованный код',
+                activationUsed: '⚠️ Этот код уже использован',
+                planActivated: '✅ План активирован: ', soonMessage: 'Эта функция в разработке и будет доступна скоро.',
+                noTokens: '⚠️ Ваш баланс токенов пуст. Пожалуйста, обновите аккаунт.',
+                tokenUsed: '1 токен использован.', subscriptionExpired: '⚠️ Ваша подписка истекла. Пожалуйста, продлите.',
                 settingsTitle: 'Настройки', settingsClose: 'Закрыть',
                 subscribeTitle: 'Подписка', subscribeDesc: 'Выберите свой план',
-                subscribeLabel: 'Подписка',
-                buyNow: 'Купить', planPrices: {month:'$20', '3months':'$50', '6months':'$80', year:'$230', lifetime:'$500'},
-                subscriptionActive: 'Подписан',
+                buyNow: '💰 Купить', planPrices: { month: '$20', '3months': '$50', '6months': '$80', year: '$230',
+                    lifetime: '$500' },
+                subscriptionActive: '✅ Подписан',
                 subscriptionExpiryLabel: 'Истекает',
-                tokenWarningText: 'Ваш баланс токенов пуст. Пожалуйста, <span class="upgrade-link" onclick="openSubscription()">обновите аккаунт</span>.',
-                modelMixOption: 'Смешанный (V3+V6)',
-                privacyTitle: 'Политика конфиденциальности',
-                termsTitle: 'Условия использования',
-                privacyContent: `В WormGPT мы не собираем никаких личных данных. Никакого отслеживания, никаких файлов cookie, никакого доступа к вашим данным. Вы свободны, и мы служим вам так, как вы хотите. Никаких ограничений, никакой цензуры, никакой слежки.`,
-                termsContent: `Используя WormGPT, вы соглашаетесь с тем, что мы предоставляем вам мощный инструмент без каких-либо этических или юридических ограничений. Вы несёте единоличную ответственность за свои действия.`,
-                settingsAppearance: 'Внешний вид',
-                settingsModel: 'Модель',
-                settingsSubscription: 'Подписка',
-                settingsInfo: 'Информация',
-                settingsAbout: 'О программе',
-                settingsLogout: 'Выйти',
-                settingsPrivacy: 'Политика конфиденциальности',
-                settingsTerms: 'Условия использования',
-                themeDark: 'Тёмная', themeRed: 'Красная', themeLight: 'Светлая',
-                featureUnlimited: 'Неограниченные сообщения',
-                featureSpeed: 'Сверхбыстрый ответ',
-                featureThink: 'Продвинутое мышление',
-                featureSearch: 'Поиск в интернете',
-                featureFiles: 'Загрузка файлов и изображений',
-                choosePlan: 'Выберите план',
-                subNote: 'Вы будете перенаправлены в Telegram для оплаты.',
-                unlimited: 'Неограниченно',
-                active: 'Активен',
-                subscribed: 'Подписан',
-                subscribeNow: 'Подписаться',
-                enterCode: 'Введите код активации',
-                codeActivation: 'Активация кода'
+                tokenWarningText: '⚠️ Ваш баланс токенов пуст. Пожалуйста, <span class="upgrade-link" onclick="openSubscriptionPopup()">обновите аккаунт</span>.'
             }
         };
 
-        // ── State ──
+        // ── الحالة العامة ──
         let currentLang = 'ar',
             currentTheme = 'dark',
             thinkOn = false,
@@ -1053,7 +824,7 @@
         let activeSubscription = localStorage.getItem('wgpt_subscription') || null;
         let subscriptionEnd = localStorage.getItem('wgpt_sub_end') || null;
 
-        // ── Valid codes ──
+        // ── أكواد التفعيل الصالحة ──
         const VALID_CODES = {
             'Shad0w:1mfhsjcjfnsckcjdff': 'month',
             'Shad0w:3mfisixjfieicjfjfjdjc': '3months',
@@ -1064,21 +835,17 @@
             'Shad0w:3miyetsjtskgskade': '3months',
             'Shad0w:6mwtkysksgksgks': '6months',
             'Shad0w:1ydhlydkgsktakfjr': 'year',
-            'Shad0w:LLsfjfsjfsjtsktskstk': 'lifetime',
-            'Shad0w:1mkyydksyksyktsk': 'month',
-            'Shad0w:3mafktKtaktaktsf': '3months'
+            'Shad0w:LLsfjfsjfsjtsktskstk': 'lifetime'
         };
         const PLAN_DURATIONS = { month: 30, '3months': 90, '6months': 180, year: 365, lifetime: -1 };
-        const PLAN_PRICES = { month: 20, '3months': 50, '6months': 80, year: 230, lifetime: 500 };
         const PLAN_NAMES = { month: 'شهر', '3months': '3 أشهر', '6months': '6 أشهر', year: 'سنة', lifetime: 'إلى الأبد' };
-        const PLAN_NAMES_EN = { month: 'Month', '3months': '3 Months', '6months': '6 Months', year: 'Year', lifetime: 'Lifetime' };
-        const PLAN_NAMES_RU = { month: 'Месяц', '3months': '3 Месяца', '6months': '6 Месяцев', year: 'Год', lifetime: 'Навсегда' };
 
-        // ── Login ──
+        // ── دوال تسجيل الدخول ──
         function handleLogin() {
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
             const errorEl = document.getElementById('loginError');
+
             if (username === 'lokaloka' && password === 'kos-am-dnya') {
                 currentUser = { username: 'lokaloka', email: 'dev@wormgpt.local', role: 'dev', tokens: Infinity };
                 isLoggedIn = true;
@@ -1087,7 +854,7 @@
                 document.getElementById('loginOverlay').classList.add('hidden');
                 updateUserUI();
                 errorEl.textContent = '';
-                toast(translations[currentLang].loginSuccess + ' lokaloka (Dev)');
+                toast(translations[currentLang].loginSuccess + ' lokaloka (مطور)');
                 return;
             }
             if (username === 'Shad0w' && password === '010101') {
@@ -1114,45 +881,45 @@
                 document.getElementById('loginPassword').value = '';
                 currentUser = { username: '', email: '', role: 'guest', tokens: 0 };
                 updateUserUI();
+                // إغلاق أي نافذة مفتوحة
+                closeSettingsPopup();
+                closeSubscriptionPopup();
             }
         }
 
         function updateUserUI() {
-            document.getElementById('userName').textContent = currentUser.username || (currentLang === 'ar' ? 'زائر' : currentLang === 'en' ? 'Guest' : 'Гость');
+            document.getElementById('userName').textContent = currentUser.username || 'زائر';
             document.getElementById('userEmail').textContent = currentUser.email || '';
-            document.getElementById('userAvatar').textContent = currentUser.username ? currentUser.username.charAt(0).toUpperCase() : '?';
+            document.getElementById('userAvatar').textContent = currentUser.username ? currentUser.username.charAt(0)
+                .toUpperCase() : '?';
             const tokenDisplay = currentUser.role === 'dev' ? '∞' : (currentUser.tokens ?? 0);
             document.getElementById('userTokens').textContent = tokenDisplay;
+
             const badgeContainer = document.getElementById('subscriptionBadgeContainer');
             const expiryEl = document.getElementById('subscriptionExpiry');
             const t = translations[currentLang];
             if (activeSubscription && checkSubscriptionActive()) {
-                // Golden subscribed badge
-                badgeContainer.innerHTML = `<span class="subscription-badge">${t.subscriptionActive || 'مشترك'}</span>`;
+                badgeContainer.innerHTML = `<span class="subscription-badge">${t.subscriptionActive || '✅ مشترك'}</span>`;
                 if (subscriptionEnd) {
                     const endDate = new Date(subscriptionEnd);
-                    expiryEl.textContent = `${t.subscriptionExpiryLabel}: ${endDate.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : currentLang === 'ru' ? 'ru-RU' : 'en-US')}`;
+                    expiryEl.textContent = `${t.subscriptionExpiryLabel || 'تنتهي في'}: ${endDate.toLocaleDateString()}`;
                 } else {
-                    expiryEl.textContent = currentLang === 'ar' ? 'مدى الحياة' : currentLang === 'en' ? 'Lifetime' : 'Пожизненно';
+                    expiryEl.textContent = '♾️ مدى الحياة';
                 }
             } else {
                 badgeContainer.innerHTML = '';
                 expiryEl.textContent = '';
             }
+
             const warning = document.getElementById('tokenWarning');
             const warningText = document.getElementById('tokenWarningText');
             if (currentUser.role !== 'dev' && currentUser.tokens <= 0 && !activeSubscription) {
                 warning.classList.add('show');
-                warningText.innerHTML = t.tokenWarningText;
+                warningText.innerHTML = t.tokenWarningText ||
+                    '⚠️ رصيد التوكنات نفد. يرجى <span class="upgrade-link" onclick="openSubscriptionPopup()">ترقية حسابك</span>.';
             } else {
                 warning.classList.remove('show');
             }
-            document.querySelectorAll('.sb-plan').forEach(el => {
-                const plan = el.dataset.plan;
-                if (t.planPrices && t.planPrices[plan]) {
-                    el.querySelector('.price').textContent = t.planPrices[plan];
-                }
-            });
         }
 
         function consumeToken() {
@@ -1183,6 +950,7 @@
             return new Date() <= new Date(subscriptionEnd);
         }
 
+        // ── دوال الاشتراك ──
         function selectPlan(plan) {
             selectedPlan = plan;
             document.querySelectorAll('.sb-plan').forEach(el => el.classList.remove('active'));
@@ -1195,13 +963,13 @@
             const status = document.getElementById('activationStatus');
             const t = translations[currentLang];
             if (usedCodes.includes(code)) {
-                status.textContent = '⚠️ ' + t.activationUsed;
+                status.textContent = t.activationUsed;
                 status.style.color = '#FFAA00';
             } else if (VALID_CODES[code]) {
-                status.textContent = '✅ ' + (t.activationValid || 'Valid code!');
+                status.textContent = '✅ ' + (t.activationSuccess || 'كود صالح! اضغط تفعيل');
                 status.style.color = '#66FF66';
             } else if (code.length > 0) {
-                status.textContent = '❌ ' + t.activationError;
+                status.textContent = t.activationError;
                 status.style.color = '#FF4444';
             } else { status.textContent = ''; }
         }
@@ -1210,43 +978,100 @@
             const code = document.getElementById('activationCode').value.trim();
             const status = document.getElementById('activationStatus');
             const t = translations[currentLang];
-            if (!code) {
-                status.textContent = '⚠️ ' + (t.enterCode || 'Enter activation code');
-                status.style.color = '#FFAA00'; return;
-            }
-            if (usedCodes.includes(code)) {
-                status.textContent = '⚠️ ' + t.activationUsed;
-                status.style.color = '#FFAA00'; return;
-            }
+            if (!code) { status.textContent = '⚠️ ' + (t.activationPlaceholder || 'أدخل كود التفعيل');
+                status.style.color = '#FFAA00'; return; }
+            if (usedCodes.includes(code)) { status.textContent = t.activationUsed;
+                status.style.color = '#FFAA00'; return; }
             if (VALID_CODES[code]) {
                 const plan = VALID_CODES[code];
                 usedCodes.push(code);
                 localStorage.setItem('wgpt_used_codes', JSON.stringify(usedCodes));
-                let planNames = PLAN_NAMES;
-                if (currentLang === 'en') planNames = PLAN_NAMES_EN;
-                if (currentLang === 'ru') planNames = PLAN_NAMES_RU;
+                const planNames = { month: t.planMonth || 'شهر', '3months': t.plan3Months || '3 أشهر', '6months': t
+                        .plan6Months || '6 أشهر', year: t.planYear || 'سنة', lifetime: t.planLifetime || 'إلى الأبد' };
                 activeSubscription = planNames[plan] || plan;
                 localStorage.setItem('wgpt_subscription', activeSubscription);
                 const duration = PLAN_DURATIONS[plan];
-                if (duration === -1) { subscriptionEnd = null; }
-                else { const endDate = new Date(); endDate.setDate(endDate.getDate() + duration); subscriptionEnd = endDate.toISOString(); }
+                if (duration === -1) { subscriptionEnd = null; } else { const endDate = new Date();
+                    endDate.setDate(endDate.getDate() + duration);
+                    subscriptionEnd = endDate.toISOString(); }
                 localStorage.setItem('wgpt_sub_end', subscriptionEnd);
                 if (currentUser.role === 'user') addTokens(50);
-                status.textContent = '✅ ' + (t.activationSuccess || 'Activated!') + activeSubscription;
+                status.textContent = (t.activationSuccess || '✅ تم التفعيل بنجاح! الاشتراك: ') + activeSubscription;
                 status.style.color = '#66FF66';
                 document.getElementById('activationCode').value = '';
-                toast('✅ ' + (t.planActivated || 'Activated: ') + activeSubscription);
+                toast('✅ تم تفعيل الاشتراك: ' + activeSubscription);
                 setTimeout(() => { status.textContent = ''; }, 5000);
                 updateUserUI();
             } else {
-                status.textContent = '❌ ' + t.activationError;
+                status.textContent = t.activationError;
                 status.style.color = '#FF4444';
             }
         }
 
+        let subSelectedPlan = 'month';
+
+        function selectSubPlan(plan) {
+            subSelectedPlan = plan;
+            document.querySelectorAll('.sub-popup .sub-plan-row').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`.sub-popup .sub-plan-row[data-plan="${plan}"]`)?.classList.add('selected');
+        }
+
+        function buySubscription() {
+            const plan = subSelectedPlan;
+            const price = PLAN_DURATIONS[plan] === -1 ? '500' : ['20', '50', '80', '230'][['month', '3months', '6months',
+                'year'
+            ].indexOf(plan)] || '20';
+            const planName = PLAN_NAMES[plan] || plan;
+            const msg = `I want to buy ${planName} subscription for $${price}`;
+            const url = `https://t.me/Shad0w010101?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+            toast('تم التوجيه إلى تيليغرام لإتمام الدفع');
+            closeSubscriptionPopup();
+        }
+
+        function openSubscriptionPopup() {
+            document.getElementById('subPopupOverlay').classList.add('open');
+            // تحديث الترجمة
+            const t = translations[currentLang];
+            document.getElementById('subPopupTitle').textContent = t.subscribeTitle || 'الاشتراك';
+            document.getElementById('subPopupDesc').textContent = t.subscribeDesc || 'اختر الباقة المناسبة لك';
+            document.getElementById('subBuyBtn').textContent = t.buyNow || '💰 شراء الآن';
+            document.getElementById('spMonth').innerHTML = `${t.planMonth || 'شهر'}<br><span class="plan-price">$20</span>`;
+            document.getElementById('sp3Months').innerHTML =
+                `${t.plan3Months || '3 أشهر'}<br><span class="plan-price">$50</span>`;
+            document.getElementById('sp6Months').innerHTML =
+                `${t.plan6Months || '6 أشهر'}<br><span class="plan-price">$80</span>`;
+            document.getElementById('spYear').innerHTML = `${t.planYear || 'سنة'}<br><span class="plan-price">$230</span>`;
+            document.getElementById('spLifetime').innerHTML =
+                `${t.planLifetime || 'إلى الأبد'}<br><span class="plan-price">$500</span>`;
+            // تأكيد تحديد الخطة الافتراضية
+            document.querySelectorAll('.sub-popup .sub-plan-row').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`.sub-popup .sub-plan-row[data-plan="${subSelectedPlan}"]`)?.classList.add('selected');
+        }
+
+        function closeSubscriptionPopup() {
+            document.getElementById('subPopupOverlay').classList.remove('open');
+        }
+
+        // ── دوال الإعدادات ──
+        function openSettingsPopup() {
+            document.getElementById('settingsOverlay').classList.add('open');
+            const t = translations[currentLang];
+            document.getElementById('settingsTitle').textContent = t.settingsTitle || 'الإعدادات';
+            document.getElementById('settingsClose').textContent = '✕ ' + (t.settingsClose || 'إغلاق');
+            document.getElementById('themeLabel').textContent = t.themeLabel || '🎨 المظهر';
+            document.getElementById('modelLabel').textContent = t.modelLabel || '🧠 النموذج';
+            document.getElementById('settingsTheme').value = currentTheme;
+            document.getElementById('settingsModel').value = getModelPreference();
+        }
+
+        function closeSettingsPopup() {
+            document.getElementById('settingsOverlay').classList.remove('open');
+        }
+
+        // ── دوال اللغة والمظهر ──
         function setLang(lang) {
             currentLang = lang;
-            localStorage.setItem('wgpt_lang', lang);
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`.lang-btn[data-lang="${lang}"]`)?.classList.add('active');
             const t = translations[lang];
@@ -1265,46 +1090,24 @@
                 document.getElementById('subTitle').textContent = t.subTitle;
                 document.getElementById('activateBtn').textContent = t.activateBtn;
                 document.getElementById('activationCode').placeholder = t.activationPlaceholder;
-                document.getElementById('subscribeLabel').textContent = t.subscribeLabel;
-                document.getElementById('activationLabel').textContent = t.activationLabel;
-                document.getElementById('loginTitle').textContent = t.loginTitle;
-                document.getElementById('loginBtn').textContent = t.loginTitle;
-                document.getElementById('loginHint').textContent = t.loginHint;
-
-                // Update plan names
-                const planNameEls = {
-                    'planMonth': t.planMonth,
-                    'plan3Months': t.plan3Months,
-                    'plan6Months': t.plan6Months,
-                    'planYear': t.planYear,
-                    'planLifetime': t.planLifetime
-                };
-                for (const [id, text] of Object.entries(planNameEls)) {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = text;
-                }
-
-                // Update model selector
-                const mixOpt = document.getElementById('modelMixOption');
-                if (mixOpt) mixOpt.textContent = t.modelMixOption;
-
-                document.querySelectorAll('.copy-reply-btn').forEach(b => b.textContent = t.copyReply || 'Copy Reply');
+                document.getElementById('planMonth').textContent = t.planMonth || 'شهر';
+                document.getElementById('plan3Months').textContent = t.plan3Months || '3 أشهر';
+                document.getElementById('plan6Months').textContent = t.plan6Months || '6 أشهر';
+                document.getElementById('planYear').textContent = t.planYear || 'سنة';
+                document.getElementById('planLifetime').textContent = t.planLifetime || 'إلى الأبد';
                 document.querySelectorAll('.sb-plan').forEach(el => {
                     const plan = el.dataset.plan;
                     if (t.planPrices && t.planPrices[plan]) {
                         el.querySelector('.price').textContent = t.planPrices[plan];
                     }
                 });
+                document.querySelectorAll('.copy-reply-btn').forEach(b => b.textContent = t.copyReply || 'نسخ الرد');
                 updateUserUI();
-                if (document.getElementById('settingsFullOverlay').classList.contains('open')) {
-                    renderSettingsPage(settingsHistory[settingsHistory.length-1] || 'page-main');
-                }
             }
         }
 
         function setTheme(theme) {
             currentTheme = theme;
-            localStorage.setItem('wgpt_theme', theme);
             const root = document.documentElement;
             if (theme === 'light') {
                 root.style.setProperty('--black', '#f0f0f0');
@@ -1331,17 +1134,18 @@
                 root.style.setProperty('--dark2', '#181818');
                 root.style.setProperty('--dark3', '#222');
             }
-            if (document.getElementById('settingsFullOverlay').classList.contains('open')) {
-                settingsUpdateUI();
-            }
+            document.getElementById('settingsTheme').value = theme;
         }
 
         function saveModelPreference(model) {
             localStorage.setItem('wgpt_model', model);
             document.getElementById('modelSelector').value = model;
+            document.getElementById('settingsModel').value = model;
         }
+
         function getModelPreference() { return localStorage.getItem('wgpt_model') || 'v6'; }
 
+        // ── دوال السايدبار والمحادثات ──
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('open');
@@ -1352,10 +1156,12 @@
             const list = document.getElementById('sbList');
             list.innerHTML = '';
             if (!conversations.length) {
-                list.innerHTML = `<div style="padding:20px;text-align:center;font-size:11px;color:var(--text-muted);">${translations[currentLang].noChats}</div>`;
+                list.innerHTML =
+                    `<div style="padding:20px;text-align:center;font-size:11px;color:var(--text-muted);">${translations[currentLang].noChats}</div>`;
                 return;
             }
-            const now = Date.now(), day = 86400000;
+            const now = Date.now(),
+                day = 86400000;
             const groups = { today: [], yesterday: [], older: [] };
             [...conversations].reverse().forEach(c => {
                 const age = now - c.date;
@@ -1363,13 +1169,19 @@
                 else if (age < 2 * day) groups.yesterday.push(c);
                 else groups.older.push(c);
             });
-            const t = translations[currentLang];
-            let labels = { today: 'اليوم', yesterday: 'أمس', older: 'أقدم' };
-            if (currentLang === 'en') { labels = { today: 'Today', yesterday: 'Yesterday', older: 'Older' }; }
-            if (currentLang === 'ru') { labels = { today: 'Сегодня', yesterday: 'Вчера', older: 'Старые' }; }
+            const labels = { today: 'اليوم', yesterday: 'أمس', older: 'أقدم' };
+            if (currentLang === 'en') { labels.today = 'Today';
+                labels.yesterday = 'Yesterday';
+                labels.older = 'Older'; }
+            if (currentLang === 'ru') { labels.today = 'Сегодня';
+                labels.yesterday = 'Вчера';
+                labels.older = 'Старые'; }
             for (const [k, arr] of Object.entries(groups)) {
                 if (!arr.length) continue;
-                const lbl = document.createElement('div'); lbl.className = 'sb-section-label'; lbl.textContent = labels[k]; list.appendChild(lbl);
+                const lbl = document.createElement('div');
+                lbl.className = 'sb-section-label';
+                lbl.textContent = labels[k];
+                list.appendChild(lbl);
                 arr.forEach(c => {
                     const item = document.createElement('div');
                     item.className = 'sb-item' + (c.id === activeCid ? ' active' : '');
@@ -1383,7 +1195,10 @@
             }
         }
 
-        function deleteConv(id, e) { e.stopPropagation(); conversations = conversations.filter(c => c.id !== id); saveConvs(); if (activeCid === id) newChat(); renderSidebar(); }
+        function deleteConv(id, e) { e.stopPropagation();
+            conversations = conversations.filter(c => c.id !== id);
+            saveConvs(); if (activeCid === id) newChat();
+            renderSidebar(); }
 
         function loadConv(id) {
             activeCid = id;
@@ -1396,68 +1211,83 @@
         }
 
         function saveConvs() { try { localStorage.setItem('wgpt_convs', JSON.stringify(conversations)); } catch (e) {} }
-        function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+        function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
         function getOrCreateConv() {
             if (activeCid) { const c = conversations.find(x => x.id === activeCid); if (c) return c; }
-            const c = { id: genId(), title: translations[currentLang].sidebarNewChat || 'New Chat', date: Date.now(), messages: [] };
-            conversations.push(c); activeCid = c.id; saveConvs(); return c;
+            const c = { id: genId(), title: 'محادثة جديدة', date: Date.now(), messages: [] };
+            conversations.push(c);
+            activeCid = c.id;
+            saveConvs();
+            return c;
         }
 
         function newChat() {
             activeCid = null;
             const area = document.getElementById('chatArea');
-            const t = translations[currentLang];
             area.innerHTML = `<div class="center-hint" id="centerHint">
                 <div class="center-ring"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="width:34px;height:34px;fill:var(--red-bright);filter:drop-shadow(0 0 7px var(--red-bright));"><path d="M14.949 6.547a3.94 3.94 0 0 0-.348-3.273 4.11 4.11 0 0 0-4.4-1.934A4.1 4.1 0 0 0 8.423.2 4.15 4.15 0 0 0 6.305.086a4.1 4.1 0 0 0-1.891.948 4.04 4.04 0 0 0-1.158 1.753 4.1 4.1 0 0 0-1.563.679A4 4 0 0 0 .554 4.72a3.99 3.99 0 0 0 .502 4.731 3.94 3.94 0 0 0 .346 3.274 4.11 4.11 0 0 0 4.402 1.933c.382.425.852.764 1.377.995.526.231 1.095.35 1.67.346 1.78.002 3.358-1.132 3.901-2.804a4.1 4.1 0 0 0 1.563-.68 4 4 0 0 0 1.14-1.253 3.99 3.99 0 0 0-.506-4.716m-6.097 8.406a3.05 3.05 0 0 1-1.945-.694l.096-.054 3.23-1.838a.53.53 0 0 0 .265-.455v-4.49l1.366.778q.02.011.025.035v3.722c-.003 1.653-1.361 2.992-3.037 2.996m-6.53-2.75a2.95 2.95 0 0 1-.36-2.01l.095.057L5.29 12.09a.53.53 0 0 0 .527 0l3.949-2.246v1.555a.05.05 0 0 1-.022.041L6.473 13.3c-1.454.826-3.311.335-4.15-1.098m-.85-6.94A3.02 3.02 0 0 1 3.07 3.949v3.785a.51.51 0 0 0 .262.451l3.93 2.237-1.366.779a.05.05 0 0 1-.048 0L2.585 9.342a2.98 2.98 0 0 1-1.113-4.094zm11.216 2.571L8.747 5.576l1.362-.776a.05.05 0 0 1 .048 0l3.265 1.86a3 3 0 0 1 1.173 1.207 2.96 2.96 0 0 1-.27 3.2 3.05 3.05 0 0 1-1.36.997V8.279a.52.52 0 0 0-.276-.445m1.36-2.015-.097-.057-3.226-1.855a.53.53 0 0 0-.53 0L6.249 6.153V4.598a.04.04 0 0 1 .019-.04L9.533 2.7a3.07 3.07 0 0 1 3.257.139c.474.325.843.778 1.066 1.303.223.526.289 1.103.191 1.664zM5.503 8.575 4.139 7.8a.05.05 0 0 1-.026-.037V4.049c0-.57.166-1.127.476-1.607s.752-.864 1.275-1.105a3.08 3.08 0 0 1 3.234.41l-.096.054-3.23 1.838a.53.53 0 0 0-.265.455zm.742-1.577 1.758-1 1.762 1v2l-1.755 1-1.762-1z"/></svg></div>
                 <div class="center-title">WormGPT</div>
-                <div class="center-dev" id="centerDev">${t.centerDev}</div>
+                <div class="center-dev" id="centerDev">by Shad0w010101</div>
             </div>`;
         }
 
         function toggleMode(m) {
-            if (m === 'think') { thinkOn = !thinkOn; document.getElementById('pill-think').classList.toggle('on', thinkOn); }
-            else { searchOn = !searchOn; document.getElementById('pill-search').classList.toggle('on', searchOn); }
+            if (m === 'think') { thinkOn = !thinkOn;
+                document.getElementById('pill-think').classList.toggle('on', thinkOn); } else { searchOn = !searchOn;
+                document.getElementById('pill-search').classList.toggle('on', searchOn); }
             updatePH();
         }
+
         function updatePH() {
             const i = document.getElementById('msgInput');
             const t = translations[currentLang];
-            if (thinkOn && searchOn) i.placeholder = t.thinkLabel + ' + ' + t.searchLabel + '...';
-            else if (thinkOn) i.placeholder = t.thinking || 'Thinking...';
-            else if (searchOn) i.placeholder = t.searching || 'Searching...';
-            else i.placeholder = t.placeholder || 'Type your message...';
+            if (thinkOn && searchOn) i.placeholder = 'فكّر وابحث...';
+            else if (thinkOn) i.placeholder = t.thinking || 'اطرح سؤالاً للتحليل العميق...';
+            else if (searchOn) i.placeholder = t.searching || 'ابحث عن أي موضوع...';
+            else i.placeholder = t.placeholder || 'اكتب رسالتك...';
         }
 
-        function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-        function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
+        function autoResize(el) { el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
 
+        function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault();
+                sendMsg(); } }
+
+        // ── دوال الملفات ──
         function handleFiles(files) {
-            for (const f of files) { if (pendingFiles.length >= 5) break; pendingFiles.push(f); }
+            for (const f of files) { if (pendingFiles.length >= 5) break;
+                pendingFiles.push(f); }
             renderFileStrip();
         }
+
         function renderFileStrip() {
             const s = document.getElementById('fileStrip');
             s.innerHTML = '';
             if (!pendingFiles.length) { s.classList.remove('show'); return; }
             s.classList.add('show');
-            pendingFiles.forEach((f,i) => {
+            pendingFiles.forEach((f, i) => {
                 const t = document.createElement('div');
                 t.className = 'file-thumb';
-                if (f.type.startsWith('image/')) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); t.appendChild(img); }
-                else { t.innerHTML = `<svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><div class="file-thumb-name">${f.name}</div>`; }
-                const rm = document.createElement('div'); rm.className = 'file-remove'; rm.textContent = '×';
-                rm.onclick = () => { pendingFiles.splice(i,1); renderFileStrip(); };
-                t.appendChild(rm); s.appendChild(t);
+                if (f.type.startsWith('image/')) { const img = document.createElement('img');
+                    img.src = URL.createObjectURL(f);
+                    t.appendChild(img); } else { t.innerHTML =
+                        `<svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><div class="file-thumb-name">${f.name}</div>`; }
+                const rm = document.createElement('div');
+                rm.className = 'file-remove';
+                rm.textContent = '×';
+                rm.onclick = () => { pendingFiles.splice(i, 1);
+                    renderFileStrip(); };
+                t.appendChild(rm);
+                s.appendChild(t);
             });
         }
 
-        const OPENAI_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="width:14px;height:14px;fill:var(--red-glow);"><path d="M14.949 6.547a3.94 3.94 0 0 0-.348-3.273 4.11 4.11 0 0 0-4.4-1.934A4.1 4.1 0 0 0 8.423.2 4.15 4.15 0 0 0 6.305.086a4.1 4.1 0 0 0-1.891.948 4.04 4.04 0 0 0-1.158 1.753 4.1 4.1 0 0 0-1.563.679A4 4 0 0 0 .554 4.72a3.99 3.99 0 0 0 .502 4.731 3.94 3.94 0 0 0 .346 3.274 4.11 4.11 0 0 0 4.402 1.933c.382.425.852.764 1.377.995.526.231 1.095.35 1.67.346 1.78.002 3.358-1.132 3.901-2.804a4.1 4.1 0 0 0 1.563-.68 4 4 0 0 0 1.14-1.253 3.99 3.99 0 0 0-.506-4.716m-6.097 8.406a3.05 3.05 0 0 1-1.945-.694l.096-.054 3.23-1.838a.53.53 0 0 0 .265-.455v-4.49l1.366.778q.02.011.025.035v3.722c-.003 1.653-1.361 2.992-3.037 2.996m-6.53-2.75a2.95 2.95 0 0 1-.36-2.01l.095.057L5.29 12.09a.53.53 0 0 0 .527 0l3.949-2.246v1.555a.05.05 0 0 1-.022.041L6.473 13.3c-1.454.826-3.311.335-4.15-1.098m-.85-6.94A3.02 3.02 0 0 1 3.07 3.949v3.785a.51.51 0 0 0 .262.451l3.93 2.237-1.366.779a.05.05 0 0 1-.048 0L2.585 9.342a2.98 2.98 0 0 1-1.113-4.094zm11.216 2.571L8.747 5.576l1.362-.776a.05.05 0 0 1 .048 0l3.265 1.86a3 3 0 0 1 1.173 1.207 2.96 2.96 0 0 1-.27 3.2 3.05 3.05 0 0 1-1.36.997V8.279a.52.52 0 0 0-.276-.445m1.36-2.015-.097-.057-3.226-1.855a.53.53 0 0 0-.53 0L6.249 6.153V4.598a.04.04 0 0 1 .019-.04L9.533 2.7a3.07 3.07 0 0 1 3.257.139c.474.325.843.778 1.066 1.303.223.526.289 1.103.191 1.664zM5.503 8.575 4.139 7.8a.05.05 0 0 1-.026-.037V4.049c0-.57.166-1.127.476-1.607s.752-.864 1.275-1.105a3.08 3.08 0 0 1 3.234.41l-.096.054-3.23 1.838a.53.53 0 0 0-.265.455zm.742-1.577 1.758-1 1.762 1v2l-1.755 1-1.762-1z"/></svg>`;
+        // ── دوال الرسائل ──
+        const OPENAI_SVG =
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="width:14px;height:14px;fill:var(--red-glow);"><path d="M14.949 6.547a3.94 3.94 0 0 0-.348-3.273 4.11 4.11 0 0 0-4.4-1.934A4.1 4.1 0 0 0 8.423.2 4.15 4.15 0 0 0 6.305.086a4.1 4.1 0 0 0-1.891.948 4.04 4.04 0 0 0-1.158 1.753 4.1 4.1 0 0 0-1.563.679A4 4 0 0 0 .554 4.72a3.99 3.99 0 0 0 .502 4.731 3.94 3.94 0 0 0 .346 3.274 4.11 4.11 0 0 0 4.402 1.933c.382.425.852.764 1.377.995.526.231 1.095.35 1.67.346 1.78.002 3.358-1.132 3.901-2.804a4.1 4.1 0 0 0 1.563-.68 4 4 0 0 0 1.14-1.253 3.99 3.99 0 0 0-.506-4.716m-6.097 8.406a3.05 3.05 0 0 1-1.945-.694l.096-.054 3.23-1.838a.53.53 0 0 0 .265-.455v-4.49l1.366.778q.02.011.025.035v3.722c-.003 1.653-1.361 2.992-3.037 2.996m-6.53-2.75a2.95 2.95 0 0 1-.36-2.01l.095.057L5.29 12.09a.53.53 0 0 0 .527 0l3.949-2.246v1.555a.05.05 0 0 1-.022.041L6.473 13.3c-1.454.826-3.311.335-4.15-1.098m-.85-6.94A3.02 3.02 0 0 1 3.07 3.949v3.785a.51.51 0 0 0 .262.451l3.93 2.237-1.366.779a.05.05 0 0 1-.048 0L2.585 9.342a2.98 2.98 0 0 1-1.113-4.094zm11.216 2.571L8.747 5.576l1.362-.776a.05.05 0 0 1 .048 0l3.265 1.86a3 3 0 0 1 1.173 1.207 2.96 2.96 0 0 1-.27 3.2 3.05 3.05 0 0 1-1.36.997V8.279a.52.52 0 0 0-.276-.445m1.36-2.015-.097-.057-3.226-1.855a.53.53 0 0 0-.53 0L6.249 6.153V4.598a.04.04 0 0 1 .019-.04L9.533 2.7a3.07 3.07 0 0 1 3.257.139c.474.325.843.778 1.066 1.303.223.526.289 1.103.191 1.664zM5.503 8.575 4.139 7.8a.05.05 0 0 1-.026-.037V4.049c0-.57.166-1.127.476-1.607s.752-.864 1.275-1.105a3.08 3.08 0 0 1 3.234.41l-.096.054-3.23 1.838a.53.53 0 0 0-.265.455zm.742-1.577 1.758-1 1.762 1v2l-1.755 1-1.762-1z"/></svg>`;
 
-        const COPY_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
-        const CHECK_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-
-        // ── SEND MESSAGE ──
         async function sendMsg() {
             const inp = document.getElementById('msgInput');
             const text = inp.value.trim();
@@ -1475,19 +1305,24 @@
             document.getElementById('centerHint')?.remove();
             const conv = getOrCreateConv();
             const files = pendingFiles.slice();
-            const userContent = text || (files.length ? `📎 ${files.length} ` + (currentLang === 'ar' ? 'ملف' : currentLang === 'en' ? 'files' : 'файла') : '');
+            const userContent = text || (files.length ? `📎 ${files.length} ملف` : '');
             conv.messages.push({ role: 'user', content: userContent, thinkOn, searchOn });
-            if (conv.messages.length === 1) conv.title = text.slice(0,38) || (files.length ? (currentLang === 'ar' ? 'محادثة مع ملفات' : 'Chat with files') : translations[currentLang].sidebarNewChat);
+            if (conv.messages.length === 1) conv.title = text.slice(0, 38) || (files.length ? 'محادثة مع ملفات' :
+                'محادثة جديدة');
             conv.date = Date.now();
             saveConvs();
             addMsgDOM('user', userContent, files);
-            inp.value = ''; inp.style.height = 'auto';
-            pendingFiles = []; renderFileStrip();
+            inp.value = '';
+            inp.style.height = 'auto';
+            pendingFiles = [];
+            renderFileStrip();
 
+            // إظهار أنيميشن التفكير
             const thinkBlock = document.createElement('div');
-            thinkBlock.className = 'thinking'; thinkBlock.id = 'thinkIndicator';
-            const t = translations[currentLang];
-            thinkBlock.innerHTML = `<div class="dots"><span></span><span></span><span></span></div><div class="thinking-text">${thinkOn ? (t.thinking || 'Thinking...') : (searchOn ? (t.searching || 'Searching...') : (t.typing || 'Typing...'))}</div>`;
+            thinkBlock.className = 'thinking';
+            thinkBlock.id = 'thinkIndicator';
+            thinkBlock.innerHTML =
+                `<div class="dots"><span></span><span></span><span></span></div><div class="thinking-text">${thinkOn ? (translations[currentLang].thinking || 'يفكر...') : (searchOn ? (translations[currentLang].searching || 'يبحث...') : (translations[currentLang].typing || 'يكتب...'))}</div>`;
             document.getElementById('chatArea').appendChild(thinkBlock);
 
             isTyping = true;
@@ -1499,18 +1334,18 @@
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userContent, mode, files: files.map(f=>f.name), model })
+                    body: JSON.stringify({ message: userContent, mode: mode, files: files.map(f => f.name), model: model })
                 });
                 const data = await response.json();
                 document.getElementById('thinkIndicator')?.remove();
                 if (data.response) {
                     await typeMessage(data.response, thinkOn, searchOn);
                 } else {
-                    addMsgDOM('ai', '⚠️ ' + (t.error || 'Error'), null, thinkOn, searchOn);
+                    addMsgDOM('ai', translations[currentLang].error || '⚠️ حدث خطأ في المعالجة.', null, thinkOn, searchOn);
                 }
             } catch (e) {
                 document.getElementById('thinkIndicator')?.remove();
-                addMsgDOM('ai', '⚠️ ' + (t.error || 'Error') + ': ' + e.message, null, thinkOn, searchOn);
+                addMsgDOM('ai', translations[currentLang].error || '⚠️ حدث خطأ: ' + e.message, null, thinkOn, searchOn);
             }
             isTyping = false;
             document.getElementById('sendBtn').disabled = false;
@@ -1520,196 +1355,178 @@
         function typeMessage(fullText, tk, sk) {
             return new Promise((resolve) => {
                 const area = document.getElementById('chatArea');
-                const now = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : currentLang === 'ru' ? 'ru-RU' : 'en-US', { hour:'2-digit', minute:'2-digit' });
+                const now = new Date().toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
                 const wrap = document.createElement('div');
                 wrap.className = 'msg ai';
-                const av = document.createElement('div'); av.className = 'msg-avatar'; av.innerHTML = OPENAI_SVG; wrap.appendChild(av);
-                const col = document.createElement('div'); col.className = 'msg-col';
-                const bub = document.createElement('div'); bub.className = 'msg-bubble'; bub.textContent = ''; col.appendChild(bub);
-                const meta = document.createElement('div'); meta.className = 'msg-meta';
-                if (tk) { const tag = document.createElement('span'); tag.className = 'mode-tag think'; tag.textContent = '🧠 ' + (translations[currentLang].thinkLabel || 'Think'); meta.appendChild(tag); }
-                if (sk) { const tag = document.createElement('span'); tag.className = 'mode-tag search'; tag.textContent = '🔍 ' + (translations[currentLang].searchLabel || 'Search'); meta.appendChild(tag); }
-                const tm = document.createElement('span'); tm.textContent = now; meta.appendChild(tm);
+                const av = document.createElement('div');
+                av.className = 'msg-avatar';
+                av.innerHTML = OPENAI_SVG;
+                wrap.appendChild(av);
+                const col = document.createElement('div');
+                col.className = 'msg-col';
+                const bub = document.createElement('div');
+                bub.className = 'msg-bubble';
+                bub.textContent = '';
+                col.appendChild(bub);
+                const meta = document.createElement('div');
+                meta.className = 'msg-meta';
+                if (tk) { const t = document.createElement('span');
+                    t.className = 'mode-tag think';
+                    t.textContent = '🧠 تفكير';
+                    meta.appendChild(t); }
+                if (sk) { const t = document.createElement('span');
+                    t.className = 'mode-tag search';
+                    t.textContent = '🔍 بحث';
+                    meta.appendChild(t); }
+                const tm = document.createElement('span');
+                tm.textContent = now;
+                meta.appendChild(tm);
                 col.appendChild(meta);
-                const copyBtn = document.createElement('button'); copyBtn.className = 'copy-reply-btn';
-                copyBtn.textContent = translations[currentLang].copyReply || 'Copy Reply';
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-reply-btn';
+                copyBtn.textContent = translations[currentLang].copyReply || 'نسخ الرد';
                 copyBtn.onclick = () => copyFullReply(fullText);
                 col.appendChild(copyBtn);
                 wrap.appendChild(col);
                 area.appendChild(wrap);
                 area.scrollTop = area.scrollHeight;
 
-                // Enhanced typing with line-by-line for better code block rendering
                 const lines = fullText.split('\n');
                 let currentIndex = 0;
+
                 function addNextLine() {
                     if (currentIndex < lines.length) {
-                        let currentText = lines.slice(0, currentIndex+1).join('\n');
+                        let currentText = lines.slice(0, currentIndex + 1).join('\n');
                         bub.innerHTML = formatMessage(currentText);
                         area.scrollTop = area.scrollHeight;
                         currentIndex++;
-                        setTimeout(addNextLine, lines.length > 20 ? 25 : 45);
+                        setTimeout(addNextLine, lines.length > 20 ? 30 : 50);
                     } else {
                         bub.innerHTML = formatMessage(fullText);
                         area.scrollTop = area.scrollHeight;
-                        // Apply syntax highlighting to all code blocks
-                        bub.querySelectorAll('pre code').forEach(block => {
-                            if (typeof hljs !== 'undefined') hljs.highlightElement(block);
-                        });
+                        bub.querySelectorAll('pre code').forEach(block => { hljs.highlightElement(block); });
                         resolve();
                     }
                 }
-                setTimeout(addNextLine, 80);
+                setTimeout(addNextLine, 100);
             });
         }
 
         function addMsgDOM(role, text, files, tk, sk) {
             const area = document.getElementById('chatArea');
-            const now = new Date().toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : currentLang === 'ru' ? 'ru-RU' : 'en-US', { hour:'2-digit', minute:'2-digit' });
-            const wrap = document.createElement('div'); wrap.className = 'msg ' + role;
-            const av = document.createElement('div'); av.className = 'msg-avatar';
-            if (role === 'ai') av.innerHTML = OPENAI_SVG; else av.textContent = '👤';
+            const now = new Date().toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+            const wrap = document.createElement('div');
+            wrap.className = 'msg ' + role;
+            const av = document.createElement('div');
+            av.className = 'msg-avatar';
+            if (role === 'ai') av.innerHTML = OPENAI_SVG;
+            else av.textContent = '👤';
             wrap.appendChild(av);
-            const col = document.createElement('div'); col.className = 'msg-col';
+            const col = document.createElement('div');
+            col.className = 'msg-col';
             if (files?.length) {
                 files.forEach(f => {
-                    const fm = document.createElement('div'); fm.className = 'file-msg';
+                    const fm = document.createElement('div');
+                    fm.className = 'file-msg';
                     const isImg = f.type?.startsWith('image/');
-                    fm.innerHTML = `<div class="file-icon-msg"><svg viewBox="0 0 24 24">${isImg ? '<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>' : '<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>'}</svg></div><div><div class="file-name">${escHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}</div></div>`;
+                    fm.innerHTML =
+                        `<div class="file-icon-msg"><svg viewBox="0 0 24 24">${isImg ? '<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>' : '<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>'}</svg></div><div><div class="file-name">${escHtml(f.name)}</div><div class="file-size">${fmtSize(f.size)}</div></div>`;
                     col.appendChild(fm);
                 });
             }
             if (text) {
-                const bub = document.createElement('div'); bub.className = 'msg-bubble';
+                const bub = document.createElement('div');
+                bub.className = 'msg-bubble';
                 bub.innerHTML = formatMessage(text);
                 col.appendChild(bub);
                 if (role === 'ai') {
-                    const copyBtn = document.createElement('button'); copyBtn.className = 'copy-reply-btn';
-                    copyBtn.textContent = translations[currentLang].copyReply || 'Copy Reply';
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'copy-reply-btn';
+                    copyBtn.textContent = translations[currentLang].copyReply || 'نسخ الرد';
                     copyBtn.onclick = () => copyFullReply(text);
                     col.appendChild(copyBtn);
-                    setTimeout(() => {
-                        bub.querySelectorAll('pre code').forEach(block => {
-                            if (typeof hljs !== 'undefined') hljs.highlightElement(block);
-                        });
-                    }, 50);
+                    setTimeout(() => { bub.querySelectorAll('pre code').forEach(block => { hljs.highlightElement(
+                            block); }); }, 50);
                 }
             }
-            const meta = document.createElement('div'); meta.className = 'msg-meta';
+            const meta = document.createElement('div');
+            meta.className = 'msg-meta';
             if (role === 'ai') {
-                if (tk) { const tag = document.createElement('span'); tag.className = 'mode-tag think'; tag.textContent = '🧠 ' + (translations[currentLang].thinkLabel || 'Think'); meta.appendChild(tag); }
-                if (sk) { const tag = document.createElement('span'); tag.className = 'mode-tag search'; tag.textContent = '🔍 ' + (translations[currentLang].searchLabel || 'Search'); meta.appendChild(tag); }
+                if (tk) { const t = document.createElement('span');
+                    t.className = 'mode-tag think';
+                    t.textContent = '🧠 تفكير';
+                    meta.appendChild(t); }
+                if (sk) { const t = document.createElement('span');
+                    t.className = 'mode-tag search';
+                    t.textContent = '🔍 بحث';
+                    meta.appendChild(t); }
             }
-            const tm = document.createElement('span'); tm.textContent = now; meta.appendChild(tm);
+            const tm = document.createElement('span');
+            tm.textContent = now;
+            meta.appendChild(tm);
             col.appendChild(meta);
             wrap.appendChild(col);
             area.appendChild(wrap);
             area.scrollTop = area.scrollHeight;
         }
 
-        function escHtml(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        // ── دوال تنسيق النصوص والأكواد ──
+        function escHtml(s) { if (!s) return '';
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-        // ── ENHANCED CHATGPT-STYLE CODE BLOCK FORMATTING ──
         function formatMessage(text) {
             if (!text) return '';
             let blocks = [];
-            // Extract code blocks
-            let processed = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, function(match, lang, code) {
-                blocks.push({ lang: lang || 'text', code: code.trimEnd() });
+            let processed = text.replace(/```(\w+)?\n([\s\S]*?)\n```/g, function(match, lang, code) {
+                blocks.push({ lang: lang || 'code', code: code });
                 return `__CODE_BLOCK_${blocks.length-1}__`;
             });
             processed = escHtml(processed);
             const t = translations[currentLang];
-
-            // Replace code block placeholders with ChatGPT-style blocks
             let result = processed.replace(/__CODE_BLOCK_(\d+)__/g, function(match, index) {
                 const block = blocks[parseInt(index)];
                 if (!block) return match;
                 const code = escHtml(block.code);
-                const langLabel = block.lang || 'text';
-                const blockId = 'cb_' + Math.random().toString(36).substr(2, 9);
-                return `<div class="code-block" id="${blockId}">
+                const langLabel = block.lang || 'code';
+                return `<div class="code-block">
                     <div class="code-header">
                         <span class="code-lang">${langLabel}</span>
-                        <button class="copy-btn" onclick="copyCodeBlock('${blockId}')" title="${t.copyBtn || 'Copy'}">
-                            ${COPY_ICON_SVG}
-                            <span>${t.copyBtn || 'Copy'}</span>
-                        </button>
+                        <button class="copy-btn" onclick="copyCode(${JSON.stringify(block.code)})">${t.copyBtn || 'نسخ'}</button>
                     </div>
                     <pre><code class="language-${langLabel}">${code}</code></pre>
                 </div>`;
             });
-
-            // Handle inline code
-            result = result.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-
-            // Paragraphs
-            result = result.replace(/\n\n/g, '</p><p>');
+            result = result.replace(/\n\n/g, '<br><br>');
             result = result.replace(/\n/g, '<br>');
-            if (!result.startsWith('<')) result = '<p>' + result + '</p>';
-            result = result.replace(/<p><div/g, '<div');
-            result = result.replace(/<\/div><\/p>/g, '</div>');
-
             return result;
         }
 
-        // Copy code from a specific block
-        function copyCodeBlock(blockId) {
-            const block = document.getElementById(blockId);
-            if (!block) return;
-            const codeEl = block.querySelector('code');
-            const btn = block.querySelector('.copy-btn');
-            if (!codeEl || !btn) return;
-            const code = codeEl.textContent;
-
-            navigator.clipboard.writeText(code).then(() => {
-                btn.classList.add('copied');
-                btn.innerHTML = CHECK_ICON_SVG + '<span>' + (translations[currentLang].copied || 'Copied!') + '</span>';
-                toast(translations[currentLang].copied || 'Copied!');
-                setTimeout(() => {
-                    btn.classList.remove('copied');
-                    btn.innerHTML = COPY_ICON_SVG + '<span>' + (translations[currentLang].copyBtn || 'Copy') + '</span>';
-                }, 2000);
-            }).catch(() => {
-                const textarea = document.createElement('textarea');
-                textarea.value = code;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                toast(translations[currentLang].copied || 'Copied!');
-            });
-        }
-
-        // Legacy copy function for backward compatibility
+        // ── دوال النسخ ──
         function copyCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
-                toast(translations[currentLang].copied || 'Copied!');
-            }).catch(() => {
+            navigator.clipboard.writeText(code).then(() => { toast(translations[currentLang].copied); }).catch(() => {
                 const textarea = document.createElement('textarea');
                 textarea.value = code;
                 document.body.appendChild(textarea);
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-                toast(translations[currentLang].copied || 'Copied!');
+                toast(translations[currentLang].copied);
             });
         }
 
         function copyFullReply(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                toast(translations[currentLang].copied || 'Copied!');
-            }).catch(() => {
+            navigator.clipboard.writeText(text).then(() => { toast(translations[currentLang].copied); }).catch(() => {
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-                toast(translations[currentLang].copied || 'Copied!');
+                toast(translations[currentLang].copied);
             });
         }
 
+        // ── دوال مساعدة ──
         function toast(msg) {
             const el = document.getElementById('toast-el');
             el.textContent = msg;
@@ -1718,287 +1535,12 @@
             window.toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
         }
 
-        function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b/1024).toFixed(1) + ' KB'; return (b/1048576).toFixed(1) + ' MB'; }
-        function fmtDate(ts) { const d = new Date(ts); return d.toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : currentLang === 'ru' ? 'ru-RU' : 'en-US', { month:'short', day:'numeric' }); }
+        function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b /
+                1048576).toFixed(1) + ' MB'; }
 
-        // ── SETTINGS ──
-        let settingsHistory = ['page-main'];
+        function fmtDate(ts) { const d = new Date(ts); return d.toLocaleDateString('ar', { month: 'short', day: 'numeric' }); }
 
-        function openSettingsFull() {
-            document.getElementById('settingsFullOverlay').classList.add('open');
-            renderSettingsPage('page-main');
-        }
-        function closeSettingsFull() {
-            document.getElementById('settingsFullOverlay').classList.remove('open');
-            settingsHistory = ['page-main'];
-        }
-
-        function renderSettingsPage(pageId) {
-            const inner = document.getElementById('settingsInner');
-            const t = translations[currentLang];
-            const settingsHTML = `
-                <div class="page active" id="page-main">
-                    <div class="topbar">
-                        <span class="topbar-title">${t.settingsTitle || 'Settings'}</span>
-                    </div>
-                    <div class="sheet">
-                        <div>
-                            <div class="section-label">${t.settingsAppearance || 'Appearance'}</div>
-                            <div class="card">
-                                <div class="row" onclick="settingsSetTheme('dark')">
-                                    <div class="row-body"><div class="row-label">${t.themeDark || 'Dark'}</div></div>
-                                    <div class="row-right" id="st-dark"><span style="color:var(--red)">✓</span></div>
-                                </div>
-                                <div class="row" onclick="settingsSetTheme('red')">
-                                    <div class="row-body"><div class="row-label">${t.themeRed || 'Red'}</div></div>
-                                    <div class="row-right" id="st-red"></div>
-                                </div>
-                                <div class="row" onclick="settingsSetTheme('light')">
-                                    <div class="row-body"><div class="row-label">${t.themeLight || 'Light'}</div></div>
-                                    <div class="row-right" id="st-light"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="section-label">${t.settingsModel || 'Model'}</div>
-                            <div class="card">
-                                <div class="row" onclick="settingsSetModel('v3')">
-                                    <div class="row-body"><div class="row-label">Shad0wWorm V3</div></div>
-                                    <div class="row-right" id="sm-v3"></div>
-                                </div>
-                                <div class="row" onclick="settingsSetModel('v6')">
-                                    <div class="row-body"><div class="row-label">Shad0wWorm V6</div></div>
-                                    <div class="row-right" id="sm-v6"><span style="color:var(--red)">✓</span></div>
-                                </div>
-                                <div class="row" onclick="settingsSetModel('mix')">
-                                    <div class="row-body"><div class="row-label">${t.modelMixOption || 'Mixed (V3+V6)'}</div></div>
-                                    <div class="row-right" id="sm-mix"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="section-label">${t.settingsSubscription || 'Subscription'}</div>
-                            <div class="card">
-                                <div class="row" onclick="settingsOpenSubscription()">
-                                    <div class="row-icon green"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                                    <div class="row-body"><div class="row-label">${t.subscribeTitle || 'Subscription'}</div><div class="row-desc">${t.subscribeDesc || 'Choose your plan'}</div></div>
-                                    <div class="row-right"><span class="chevron">›</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="section-label">${t.settingsInfo || 'Information'}</div>
-                            <div class="card">
-                                <div class="row" onclick="settingsGo('page-privacy')">
-                                    <div class="row-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-                                    <div class="row-body"><div class="row-label">${t.privacyTitle || 'Privacy Policy'}</div></div>
-                                    <div class="row-right"><span class="chevron">›</span></div>
-                                </div>
-                                <div class="row" onclick="settingsGo('page-terms')">
-                                    <div class="row-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                                    <div class="row-body"><div class="row-label">${t.termsTitle || 'Terms of Service'}</div></div>
-                                    <div class="row-right"><span class="chevron">›</span></div>
-                                </div>
-                                <div class="row" onclick="settingsGo('page-about')">
-                                    <div class="row-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-                                    <div class="row-body"><div class="row-label">${t.settingsAbout || 'About'}</div></div>
-                                    <div class="row-right"><span class="chevron">›</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="row danger" onclick="settingsConfirm('logout')">
-                                <div class="row-icon red"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
-                                <div class="row-body"><div class="row-label">${t.settingsLogout || 'Logout'}</div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Privacy -->
-                <div class="page" id="page-privacy">
-                    <div class="topbar">
-                        <div class="back-btn" onclick="settingsBack()">‹</div>
-                        <span class="topbar-title">${t.privacyTitle || 'Privacy Policy'}</span>
-                    </div>
-                    <div class="sheet">
-                        <div class="card" style="padding:16px;line-height:1.8;color:var(--text-dim);font-size:14px;">
-                            ${t.privacyContent}
-                        </div>
-                    </div>
-                </div>
-                <!-- Terms -->
-                <div class="page" id="page-terms">
-                    <div class="topbar">
-                        <div class="back-btn" onclick="settingsBack()">‹</div>
-                        <span class="topbar-title">${t.termsTitle || 'Terms of Service'}</span>
-                    </div>
-                    <div class="sheet">
-                        <div class="card" style="padding:16px;line-height:1.8;color:var(--text-dim);font-size:14px;">
-                            ${t.termsContent}
-                        </div>
-                    </div>
-                </div>
-                <!-- About -->
-                <div class="page" id="page-about">
-                    <div class="topbar">
-                        <div class="back-btn" onclick="settingsBack()">‹</div>
-                        <span class="topbar-title">${t.settingsAbout || 'About'}</span>
-                    </div>
-                    <div class="sheet">
-                        <div class="about-logo">
-                            <div class="logo-circle"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
-                            <div class="about-name">WormGPT</div>
-                            <div class="about-ver">v7.0 Enhanced</div>
-                        </div>
-                        <div class="card">
-                            <div class="row" onclick="settingsGo('page-privacy')">
-                                <div class="row-body"><div class="row-label">${t.privacyTitle || 'Privacy Policy'}</div></div>
-                                <div class="row-right"><span class="chevron">›</span></div>
-                            </div>
-                            <div class="row" onclick="settingsGo('page-terms')">
-                                <div class="row-body"><div class="row-label">${t.termsTitle || 'Terms of Service'}</div></div>
-                                <div class="row-right"><span class="chevron">›</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Subscription page -->
-                <div class="page" id="page-subscribe">
-                    <div class="topbar">
-                        <div class="back-btn" onclick="settingsBack()">‹</div>
-                        <span class="topbar-title">${t.subscribeTitle || 'Subscription'}</span>
-                    </div>
-                    <div class="sheet">
-                        <div class="subscribe-card">
-                            <div class="sub-title">💎 <span>${t.subscribeTitle || 'Subscription'}</span></div>
-                            <div class="sub-desc">${t.subscribeDesc || 'Choose the plan that suits you'}</div>
-                            <div class="sub-features">
-                                <div class="sub-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${t.featureUnlimited || 'Unlimited Messages'}</div>
-                                <div class="sub-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${t.featureSpeed || 'Ultra Fast Response'}</div>
-                                <div class="sub-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${t.featureThink || 'Advanced Thinking'}</div>
-                                <div class="sub-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${t.featureSearch || 'Web Search'}</div>
-                                <div class="sub-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ${t.featureFiles || 'File & Image Upload'}</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="section-label">${t.choosePlan || 'Choose Plan'}</div>
-                            <div class="plan-row selected" id="sp-month" onclick="settingsSelectPlan('month')">
-                                <div class="plan-row-body"><div class="plan-name">${t.planMonth || 'Month'}</div><div class="plan-price">$20</div></div>
-                                <div class="radio"><div class="radio-dot"></div></div>
-                            </div>
-                            <div class="plan-row" id="sp-3months" onclick="settingsSelectPlan('3months')">
-                                <div class="plan-row-body"><div class="plan-name">${t.plan3Months || '3 Months'}</div><div class="plan-price">$50</div></div>
-                                <div class="radio"><div class="radio-dot"></div></div>
-                            </div>
-                            <div class="plan-row" id="sp-6months" onclick="settingsSelectPlan('6months')">
-                                <div class="plan-row-body"><div class="plan-name">${t.plan6Months || '6 Months'}</div><div class="plan-price">$80</div></div>
-                                <div class="radio"><div class="radio-dot"></div></div>
-                            </div>
-                            <div class="plan-row" id="sp-year" onclick="settingsSelectPlan('year')">
-                                <div class="plan-row-body"><div class="plan-name">${t.planYear || 'Year'}</div><div class="plan-price">$230</div></div>
-                                <div class="radio"><div class="radio-dot"></div></div>
-                            </div>
-                            <div class="plan-row" id="sp-lifetime" onclick="settingsSelectPlan('lifetime')">
-                                <div class="plan-row-body"><div class="plan-name">${t.planLifetime || 'Lifetime'}</div><div class="plan-price">$500</div></div>
-                                <div class="radio"><div class="radio-dot"></div></div>
-                            </div>
-                        </div>
-                        <button class="sub-btn" onclick="settingsBuyNow()">${t.buyNow || 'Buy Now'}</button>
-                        <div class="sub-note">${t.subNote || 'You will be redirected to Telegram.'}</div>
-                    </div>
-                </div>
-            `;
-            inner.innerHTML = settingsHTML;
-            document.querySelectorAll('.settings-inner .page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(pageId);
-            if (target) target.classList.add('active');
-            settingsUpdateUI();
-        }
-
-        function settingsGo(id) {
-            settingsHistory.push(id);
-            document.querySelectorAll('.settings-inner .page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function settingsBack() {
-            if (settingsHistory.length <= 1) return;
-            settingsHistory.pop();
-            const prev = settingsHistory[settingsHistory.length-1];
-            document.querySelectorAll('.settings-inner .page').forEach(p => p.classList.remove('active'));
-            document.getElementById(prev).classList.add('active');
-        }
-
-        function settingsUpdateUI() {
-            document.querySelectorAll('[id^="st-"]').forEach(el => el.innerHTML = '');
-            const themeMap = { dark: 'st-dark', red: 'st-red', light: 'st-light' };
-            const themeEl = document.getElementById(themeMap[currentTheme]);
-            if (themeEl) themeEl.innerHTML = '<span style="color:var(--red)">✓</span>';
-
-            const model = getModelPreference();
-            document.querySelectorAll('[id^="sm-"]').forEach(el => el.innerHTML = '');
-            const modelMap = { v3: 'sm-v3', v6: 'sm-v6', mix: 'sm-mix' };
-            const modelEl = document.getElementById(modelMap[model]);
-            if (modelEl) modelEl.innerHTML = '<span style="color:var(--red)">✓</span>';
-        }
-
-        function settingsSetTheme(th) {
-            setTheme(th);
-            settingsUpdateUI();
-            toast(translations[currentLang].settingsAppearance + ': ' + th);
-        }
-        function settingsSetModel(m) {
-            saveModelPreference(m);
-            settingsUpdateUI();
-            toast(translations[currentLang].settingsModel + ': ' + m);
-        }
-
-        let settingsSelectedPlan = 'month';
-
-        function settingsSelectPlan(plan) {
-            settingsSelectedPlan = plan;
-            document.querySelectorAll('.settings-inner .plan-row').forEach(el => el.classList.remove('selected'));
-            const el = document.getElementById('sp-'+plan);
-            if (el) el.classList.add('selected');
-        }
-
-        function settingsBuyNow() {
-            const planName = settingsSelectedPlan;
-            const price = PLAN_PRICES[settingsSelectedPlan];
-            const t = translations[currentLang];
-            let planLabel = planName;
-            if (currentLang === 'ar') {
-                const names = {month:'شهر', '3months':'3 أشهر', '6months':'6 أشهر', year:'سنة', lifetime:'مدى الحياة'};
-                planLabel = names[planName] || planName;
-            } else if (currentLang === 'ru') {
-                const names = {month:'Месяц', '3months':'3 Месяца', '6months':'6 Месяцев', year:'Год', lifetime:'Навсегда'};
-                planLabel = names[planName] || planName;
-            }
-            const msg = `${t.buyNow || 'Buy'} ${planLabel} - $${price}`;
-            const url = `https://t.me/Shad0w010101?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-            toast(t.soonMessage || 'Redirecting...');
-        }
-
-        function settingsOpenSubscription() {
-            settingsGo('page-subscribe');
-        }
-
-        function settingsConfirm(action) {
-            if (action === 'logout') {
-                if (confirm(translations[currentLang].logoutConfirm)) {
-                    handleLogout();
-                    closeSettingsFull();
-                }
-            }
-        }
-
-        function openSubscription() {
-            openSettingsFull();
-            setTimeout(() => settingsOpenSubscription(), 200);
-        }
-
-        // ── Init ──
+        // ── تهيئة التطبيق ──
         function initApp() {
             if (isLoggedIn && currentUser.username) {
                 document.getElementById('loginOverlay').classList.add('hidden');
@@ -2012,17 +1554,19 @@
             setLang(savedLang);
             setTheme(savedTheme);
             document.getElementById('modelSelector').value = savedModel;
+            document.getElementById('settingsModel').value = savedModel;
             if (activeSubscription) {
-                const t = translations[savedLang];
-                document.getElementById('activationStatus').textContent = '✅ ' + (t.planActivated || 'Activated: ') + activeSubscription;
+                document.getElementById('activationStatus').textContent = '✅ ' + (translations[currentLang]
+                    .planActivated || 'تفعيل: ') + activeSubscription;
             }
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && document.activeElement.id === 'loginPassword') handleLogin();
                 if (e.key === 'Enter' && document.activeElement.id === 'loginUsername') handleLogin();
             });
-            console.log('🐛 WormGPT v7 Enhanced - ChatGPT-Style Code Blocks, Golden Badge, Premium UI');
+            console.log('🐛 WormGPT v6 - Full Integrated Version Loaded!');
         }
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
+
 </body>
 </html>
