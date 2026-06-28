@@ -9,26 +9,26 @@ import instagrapi
 
 app = Flask(__name__)
 
-# ===== الإعدادات من البيئة =====
-TARGET_USERNAME = os.environ.get("TARGET_USER", "eziox01")
+# ===== الإعدادات =====
+TARGET_USERNAME = os.environ.get("TARGET_USER", "")
 ACCOUNTS_FILE = "accounts.txt"
-
-# ===== متغيرات حالة البوت =====
 bot_status = {
     "running": False,
     "thread": None,
     "stop_flag": False,
-    "logs": ["[*] جاهز. اضغط زر البدء."],
-    "stats": {"success": 0, "fail": 0, "already": 0}
+    "logs": [],
+    "stats": {"success": 0, "fail": 0, "already": 0},
+    "details": []  # قائمة تفصيلية لكل حساب
 }
+target_lock = threading.Lock()
+current_target = TARGET_USERNAME
 
 # ===== دوال الحسابات =====
 def load_accounts():
     if not os.path.exists(ACCOUNTS_FILE):
         return []
     with open(ACCOUNTS_FILE, 'r', encoding='utf-8', errors='ignore') as f:
-        lines = [line.strip() for line in f if line.strip() and ':' in line]
-    return lines
+        return [line.strip() for line in f if line.strip() and ':' in line]
 
 def add_account_to_file(account):
     with open(ACCOUNTS_FILE, 'a', encoding='utf-8') as f:
@@ -43,7 +43,7 @@ def delete_account_from_file(index):
         return True
     return False
 
-# ===== دالة المتابعة (القلب النابض) =====
+# ===== دالة المتابعة مع تفاصيل الفشل =====
 def follow_single(acc_line):
     try:
         user, pwd = acc_line.split(':', 1)
@@ -51,7 +51,12 @@ def follow_single(acc_line):
         client.set_user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
         client.login(user, pwd)
         
-        target_id = client.user_id_from_username(TARGET_USERNAME)
+        with target_lock:
+            target = current_target
+        if not target:
+            return "fail: لم يتم تحديد هدف"
+        
+        target_id = client.user_id_from_username(target)
         friendship = client.user_friendship(target_id)
         
         if friendship.following:
@@ -60,39 +65,44 @@ def follow_single(acc_line):
         client.user_follow(target_id)
         return "success"
     except instagrapi.exceptions.LoginRequired:
-        return "fail: يطلب تحقق (2FA)"
+        return "fail: يتطلب تحقق (2FA)"
     except instagrapi.exceptions.ChallengeRequired:
-        return "fail: تحدٍ أمني"
+        return "fail: تحدٍ أمني (كابتشا)"
+    except instagrapi.exceptions.ClientLoginError as e:
+        if "password" in str(e).lower():
+            return "fail: كلمة مرور خاطئة"
+        return f"fail: خطأ دخول ({str(e)[:20]})"
     except Exception as e:
-        return f"fail: {str(e)[:25]}"
+        return f"fail: {str(e)[:30]}"
 
-# ===== حلقة البوت (تشتغل في خيط منفصل) =====
+# ===== حلقة البوت =====
 def bot_worker():
     global bot_status
     bot_status["running"] = True
     bot_status["stop_flag"] = False
     bot_status["stats"] = {"success": 0, "fail": 0, "already": 0}
+    bot_status["details"] = []
     bot_status["logs"] = ["[+] البوت بدأ العمل."]
     
     while not bot_status["stop_flag"]:
         accounts = load_accounts()
         if not accounts:
-            bot_status["logs"].append("[!] لا توجد حسابات. انتظار 5 دقائق...")
-            time.sleep(300)
+            bot_status["logs"].append("[!] لا توجد حسابات. انتظار 3 دقائق...")
+            time.sleep(180)
             continue
         
         bot_status["logs"].append(f"[>] دورة جديدة: {len(accounts)} حساب.")
         for acc in accounts:
             if bot_status["stop_flag"]:
                 break
-            
             username = acc.split(':', 1)[0]
-            bot_status["logs"].append(f"[>] جاري محاولة: {username}...")
+            bot_status["logs"].append(f"[>] جاري: {username}...")
             result = follow_single(acc)
-            
+            detail = {"account": acc, "result": result, "time": datetime.now().strftime("%H:%M:%S")}
+            bot_status["details"].append(detail)
             if result == "success":
                 bot_status["stats"]["success"] += 1
-                bot_status["logs"].append(f"   ✅ نجح {username}")
+                bot_status["logs"].append(f"   ✅ {username} نجح")
             elif result == "already":
                 bot_status["stats"]["already"] += 1
                 bot_status["logs"].append(f"   ℹ️ {username} يتابع مسبقاً")
@@ -100,33 +110,38 @@ def bot_worker():
                 bot_status["stats"]["fail"] += 1
                 bot_status["logs"].append(f"   ❌ {username} فشل: {result}")
             
-            # نوم ذكي بين ٢٠-٤٠ ثانية
-            sleep_time = random.randint(20, 40)
-            time.sleep(sleep_time)
+            time.sleep(random.randint(15, 35))
         
-        bot_status["logs"].append("[*] انتهت الدورة. انتظار 30 دقيقة...")
-        time.sleep(1800)  # 30 دقيقة
+        bot_status["logs"].append("[*] انتهت الدورة. انتظار 15 دقيقة...")
+        time.sleep(900)  # 15 دقيقة
     
     bot_status["running"] = False
-    bot_status["logs"].append("[✓] البوت توقف بأمان.")
+    bot_status["logs"].append("[✓] البوت توقف.")
 
-# ===== واجهة Flask (API) =====
+# ===== نقاط نهاية Flask =====
 @app.route('/')
 def index():
-    return render_template('index.html', target=TARGET_USERNAME, accounts=load_accounts())
+    with target_lock:
+        target = current_target
+    return render_template('index.html', target=target, accounts=load_accounts())
 
 @app.route('/api/status')
 def get_status():
     return jsonify({
         "running": bot_status["running"],
         "stats": bot_status["stats"],
-        "logs": bot_status["logs"][-30:]
+        "logs": bot_status["logs"][-30:],
+        "details": bot_status["details"][-50:]
     })
 
 @app.route('/api/start', methods=['POST'])
 def start_bot():
     if bot_status["running"]:
         return jsonify({"error": "البوت يعمل بالفعل"})
+    # تحقق من وجود هدف
+    with target_lock:
+        if not current_target:
+            return jsonify({"error": "الرجاء تعيين الهدف أولاً"})
     thread = threading.Thread(target=bot_worker, daemon=True)
     thread.start()
     bot_status["thread"] = thread
@@ -137,7 +152,18 @@ def stop_bot():
     if not bot_status["running"]:
         return jsonify({"error": "البوت متوقف"})
     bot_status["stop_flag"] = True
-    return jsonify({"message": "جاري إيقاف البوت..."})
+    return jsonify({"message": "جاري الإيقاف..."})
+
+@app.route('/api/set_target', methods=['POST'])
+def set_target():
+    data = request.json
+    new_target = data.get('target', '').strip()
+    if not new_target:
+        return jsonify({"error": "الرجاء إدخال اسم مستخدم"})
+    with target_lock:
+        global current_target
+        current_target = new_target
+    return jsonify({"message": f"تم تعيين الهدف إلى {new_target}"})
 
 @app.route('/api/accounts', methods=['POST'])
 def add_account():
