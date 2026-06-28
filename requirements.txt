@@ -1,4 +1,0 @@
-flask
-instagrapi
-requests
-gunicorn
