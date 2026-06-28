@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaBot Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #0b0e14; color: #c8d6e5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Cards */
+        .card { background: #141a24; border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid #1f2a3a; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2a3a; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h1 { color: #00d4ff; font-size: 28px; font-weight: 700; letter-spacing: 1px; }
+        .header h1 span { color: #ff3860; }
+        .badge { background: #1f2a3a; padding: 6px 14px; border-radius: 20px; font-size: 14px; color: #8899aa; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-item { background: #0f151d; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #1a2533; }
+        .stat-item .num { font-size: 32px; font-weight: bold; color: #fff; }
+        .stat-item .label { font-size: 13px; color: #68788a; margin-top: 5px; }
+        .stat-item.success .num { color: #2ecc71; }
+        .stat-item.fail .num { color: #e74c3c; }
+        .stat-item.already .num { color: #f1c40f; }
+        .stat-item.status .num { color: #00d4ff; }
+
+        /* Controls */
+        .controls { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn { padding: 12px 28px; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-start { background: #00d4ff; color: #0b0e14; }
+        .btn-start:hover { background: #00b8e6; transform: scale(1.02); }
+        .btn-stop { background: #ff3860; color: #fff; }
+        .btn-stop:hover { background: #e02a4f; transform: scale(1.02); }
+        .btn-danger { background: #2f3640; color: #c8d6e5; }
+        .btn-danger:hover { background: #3d4552; }
+
+        /* Accounts List */
+        .account-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+        .account-item { background: #0f151d; padding: 12px 18px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid #00d4ff; }
+        .account-item .del { color: #ff3860; cursor: pointer; font-size: 18px; background: none; border: none; }
+        .account-item .del:hover { transform: scale(1.2); }
+
+        /* Input & Logs */
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .input-group input { flex: 1; padding: 12px 18px; border-radius: 30px; border: 1px solid #1f2a3a; background: #0b0e14; color: #c8d6e5; min-width: 200px; }
+        .input-group input:focus { border-color: #00d4ff; outline: none; }
+
+        .log-box { background: #070a0f; border-radius: 12px; padding: 15px; max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 13px; color: #aab; border: 1px solid #1a2533; line-height: 1.6; }
+        .log-box .log-success { color: #2ecc71; }
+        .log-box .log-fail { color: #e74c3c; }
+        .log-box .log-info { color: #00d4ff; }
+
+        @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>🔥 Insta<span>Ghost</span></h1>
+                <div class="badge">Target: <strong id="target-label">{{ target }}</strong></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item success"><div class="num" id="stat-success">0</div><div class="label">✅ Followed</div></div>
+                <div class="stat-item already"><div class="num" id="stat-already">0</div><div class="label">ℹ️ Already</div></div>
+                <div class="stat-item fail"><div class="num" id="stat-fail">0</div><div class="label">❌ Failed</div></div>
+                <div class="stat-item status"><div class="num" id="stat-status">⏹</div><div class="label">Status</div></div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-start" id="btn-start">▶ Start Bot</button>
+                <button class="btn btn-stop" id="btn-stop">■ Stop Bot</button>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="acc-input" placeholder="username:password (e.g. user:pass123)">
+                <button class="btn btn-start" id="btn-add" style="padding: 12px 20px;">+ Add Account</button>
+            </div>
+
+            <div class="account-list" id="account-list">
+                {% for acc in accounts %}
+                <div class="account-item" data-index="{{ loop.index0 }}">
+                    <span>{{ acc }}</span>
+                    <button class="del" data-index="{{ loop.index0 }}">✕</button>
+                </div>
+                {% endfor %}
+                {% if not accounts %}<div style="color:#68788a; padding:10px;">No accounts added yet.</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 10px; color:#00d4ff;">📋 Live Logs</h3>
+            <div class="log-box" id="log-box">
+                <div>[*] Dashboard ready. Press Start to begin.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let statusInterval = null;
+
+        function fetchStatus() {
+            fetch('/api/status')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('stat-success').innerText = data.stats.success || 0;
+                    document.getElementById('stat-already').innerText = data.stats.already || 0;
+                    document.getElementById('stat-fail').innerText = data.stats.fail || 0;
+                    document.getElementById('stat-status').innerText = data.running ? '▶ Running' : '⏹ Stopped';
+                    document.getElementById('stat-status').style.color = data.running ? '#2ecc71' : '#e74c3c';
+
+                    const logBox = document.getElementById('log-box');
+                    if (data.logs && data.logs.length > 0) {
+                        logBox.innerHTML = data.logs.map(l => {
+                            let cls = '';
+                            if (l.includes('✅')) cls = 'log-success';
+                            else if (l.includes('❌')) cls = 'log-fail';
+                            else if (l.includes('✓')) cls = 'log-success';
+                            else cls = 'log-info';
+                            return `<div class="${cls}">${l}</div>`;
+                        }).join('');
+                        logBox.scrollTop = logBox.scrollHeight;
+                    }
+                });
+        }
+
+        document.getElementById('btn-start').addEventListener('click', () => {
+            fetch('/api/start', { method: 'POST' })
+                .then(r => r.json())
+                .then(d => { if (d.message) alert(d.message); fetchStatus(); });
+        });
+
+        document.getElementById('btn-stop').addEventListener('click', () => {
+            fetch('/api/stop', { method: 'POST' })
+                .then(r => r.json())
+                .then(d => { if (d.message) alert(d.message); fetchStatus(); });
+        });
+
+        document.getElementById('btn-add').addEventListener('click', () => {
+            const input = document.getElementById('acc-input');
+            const val = input.value.trim();
+            if (!val) return alert('Please enter account!');
+            fetch('/api/accounts', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account: val })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.error) alert(d.error);
+                else { input.value = ''; location.reload(); }
+            });
+        });
+
+        document.querySelectorAll('.del').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const idx = this.dataset.index;
+                if (confirm('Delete this account?')) {
+                    fetch(`/api/accounts/${idx}`, { method: 'DELETE' })
+                        .then(r => r.json())
+                        .then(() => location.reload());
+                }
+            });
+        });
+
+        // تحديث كل 5 ثواني
+        setInterval(fetchStatus, 5000);
+        fetchStatus();
+    </script>
+</body>
+</html>
